@@ -1,0 +1,52 @@
+<div>
+    <div ng-controller="demandCommonTabCtrl">
+        Demand id:{{demandid}}
+    </div>
+    <div ng-controller="DemandItemCtrl">
+
+        <div ng-switch on="mode">
+
+            <form name="demandForm" ng-switch-when="Edit">
+                <div class="control-group" ng-class="{error: demandForm.name.$invalid}">
+                    <label>Name</label>
+                    <input type="text" name="name" ng-model="demand.name" required="true" fake-server-validation class="input-medium" />
+                    <span ng-show="demandForm.name.$error.required" class="help-inline">Required field</span>
+                    <span ng-show="demandForm.name.$error.fsv" class="help-inline">Invalid name format (no hyphen)</span>
+                </div>
+                <div class="control-group" ng-class="{error: demandForm.signedAt.$invalid}">
+                    <label>Signed at</label>
+                    <input ui-date="{changeMonth: true, changeYear: true}" name="signedAt" ng-model="demand.signedAt" required class="input-medium" />
+                    <span ng-show="demandForm.signedAt.$error.required" class="help-inline">Provide sign date</span>
+                </div>
+                <div class="control-group" ng-class="{error: demandForm.category.$invalid}">
+                    <label>Category</label>
+                    <input type="text" name="category" ui-select2="categoryOptions" ng-model="demand.category" required-multiple class="input-medium" />
+                    <span ng-show="demandForm.category.$error.required" class="help-inline">Select at least one category</span>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+                    <button type="button" class="btn btn-success" ng-click="update()" ng-disabled="!isChanged() || demandForm.$invalid">Update</button>
+                </div>
+            </form>
+
+            <form ng-switch-when="View">
+                <div class="control-group">
+                    <label>Name</label>
+                    <span>{{demand.name}}</span>
+                </div>
+                <div class="control-group">
+                    <label>Signed at</label>
+                    <span>{{demand.signedAt | date:'dd MMMM yyyy'}}</span>
+                </div>
+                <div class="control-group">
+                    <label>Categories</label>
+                    <span ng-repeat="c in demand.category">{{c.text}}&nbsp;</span>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" ng-click="edit()">Edit</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
