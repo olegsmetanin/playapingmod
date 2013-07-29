@@ -45,26 +45,7 @@ angular.module('core')
 
         }
     ])
-/*    .service("pageConfig", ['$rootScope',
-        function($rootScope) {
-            this.current = {};
-            this.setConfig = function(newConfig) {
-                this.current = newConfig;
-                $rootScope.$broadcast('page:configChanged');
-            };
-        }
-    ])*/
-/*    .directive("tabbar", function() {
-        return function($scope, element, attrs) {
-            var tabs = $scope.tabs,
-                html = '* ';
-            for (var i = 0; i < tabs.length; i++) {
-                html += '<span><a href="#!' + tabs[i].url + '">' + tabs[i].name + '</a> *<span>'
-            }
-            element.html(html);
-        }
-    })*/
-        .controller('homeCtrl', ['$scope', '$stateParams', 'pageConfig',
+    .controller('homeCtrl', ['$scope', '$stateParams', 'pageConfig',
         function($scope, $stateParams, $pageConfig) {
             var demandid = $stateParams.demandid;
 
@@ -77,14 +58,4 @@ angular.module('core')
                 ]
             });
         }
-    ])
-
-/*            .controller('breadcrumbs', ['$scope', 'pageConfig',
-        function($scope, $pageConfig) {
-            $scope.current = $pageConfig.current.breadcrumb;
-            $scope.$on('page:configChanged', function() {
-                $scope.current = $pageConfig.current.breadcrumb;
-            });
-        }
-    ])
-*/
+    ]);
