@@ -13,55 +13,122 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-bg-shell');
 
     grunt.registerTask('default', ['build']);
-    grunt.registerTask('build', ['clean', 'html2js', 'concat']);
-    //'bgShell:sbtcompile'
+    grunt.registerTask('build', ['clean', 'jshint', 'html2js', 'concat', 'uglify']);
+    //'bgShell:sbtcompile' , 'copy'
+
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        builddir: "modules/build",
-        distdir: "public/modules",
+        banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' + '<%= pkg.homepage ? " * " + pkg.homepage + "\\n" : "" %>' + ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;\n' + ' * Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>\n */\n',
+        builddir: "ng-modules/build",
+        distdir: "ng-modules/dist",
+        pubdir: "public/ng-modules",
         modules: {
             core: {
-              src: "modules/core",
-              dest: '<%= distdir %>/core.js'
+                src: "ng-modules/core"
             },
-            demands: {
-              src: "modules/demands",
-              dest: '<%= distdir %>/demands.js'
+            home: {
+                src: "ng-modules/home"
+            },
+            projects: {
+                src: "ng-modules/projects"
+            },
+            crm: {
+                src: "ng-modules/crm"
             }
         },
-        clean: ['<%= builddir %>', '<%= distdir %>'],
+        clean: ['<%= builddir %>', '<%= distdir %>', '<%= pubdir %>'],
+        jshint: {
+            files: ['ng-modules/**/*.js', 'Gruntfile.js'],
+            options: {
+                curly: true,
+                eqeqeq: true,
+                immed: true,
+                latedef: true,
+                newcap: true,
+                noarg: true,
+                sub: true,
+                boss: true,
+                eqnull: true,
+                globals: {}
+            }
+        },
         html2js: {
             options: {
+                base: '.',
+                rename: function(moduleName) {
+                    return '/' + moduleName;
+                }
             },
             core: {
-                options: {
-                    base: '.'
-                },
                 src: ['<%= modules.core.src %>/**/*.tpl.html'],
                 dest: '<%= builddir %>/core/templates.js',
                 module: 'core.templates'
             },
-            demands: {
-                options: {
-                    base: '.'
-                },
-                src: ['<%= modules.demands.src %>/**/*.tpl.html'],
-                dest: '<%= builddir %>/demands/templates.js',
-                module: 'demands.templates'
+            home: {
+                src: ['<%= modules.home.src %>/**/*.tpl.html'],
+                dest: '<%= builddir %>/home/templates.js',
+                module: 'home.templates'
             },
+            projects: {
+                src: ['<%= modules.projects.src %>/**/*.tpl.html'],
+                dest: '<%= builddir %>/projects/templates.js',
+                module: 'projects.templates'
+            },
+            crm: {
+                src: ['<%= modules.crm.src %>/**/*.tpl.html'],
+                dest: '<%= builddir %>/crm/templates.js',
+                module: 'crm.templates'
+            }
         },
-
         concat: {
             core: {
                 src: ['<%= modules.core.src %>/**/*.js', '<%= builddir %>/core/**/*.js'],
-                dest: '<%= modules.core.dest %>'
+                dest: '<%= distdir %>/core.js'
             },
-            demands: {
-                src: ['<%= modules.demands.src %>/**/*.js', '<%= builddir %>/demands/**/*.js'],
-                dest: '<%= modules.demands.dest %>'
+            home: {
+                src: ['<%= modules.home.src %>/**/*.js', '<%= builddir %>/home/**/*.js'],
+                dest: '<%= distdir %>/home.js'
+            },
+            projects: {
+                src: ['<%= modules.projects.src %>/**/*.js', '<%= builddir %>/projects/**/*.js'],
+                dest: '<%= distdir %>/projects.js'
+            },
+            crm: {
+                src: ['<%= modules.crm.src %>/**/*.js', '<%= builddir %>/crm/**/*.js'],
+                dest: '<%= distdir %>/crm.js'
             }
-
+        },
+        uglify: {
+            options: {
+                banner: "<%= banner %>"
+            },
+            core: {
+                src: ['<%= distdir %>/core.js'],
+                dest: '<%= pubdir %>/core.min.js'
+            },
+            home: {
+                src: ['<%= distdir %>/home.js'],
+                dest: '<%= pubdir %>/home.min.js'
+            },
+            project: {
+                src: ['<%= distdir %>/projects.js'],
+                dest: '<%= pubdir %>/projects.min.js'
+            },
+            crm: {
+                src: ['<%= distdir %>/crm.js'],
+                dest: '<%= pubdir %>/crm.min.js'
+            }
+        },
+        copy: {
+            all: {
+                files: [{
+                    dest: '<%= pubdir %>',
+                    src: '**',
+                    expand: true,
+                    cwd: '<%= distdir %>/'
+                }]
+            }
         },
         bgShell: {
             _defaults: {
@@ -73,6 +140,4 @@ module.exports = function(grunt) {
             }
         }
     });
-
-
 };

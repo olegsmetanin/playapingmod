@@ -7,4 +7,4 @@ angular.module('core')
                 $rootScope.$broadcast('page:configChanged');
             };
         }
-    ])
+    ]);

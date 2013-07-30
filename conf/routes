@@ -3,16 +3,13 @@
 # ~~~~
 
 # Home page
+GET		/										controllers.Application.module(ngModule="home", mode="min")
+GET		/projects								controllers.Application.module(ngModule="projects", mode="min")
+GET		/projects/:projectid					controllers.Application.project(projectid, mode="min")
 
-# Map static resources from the /public folder
+# Get minified resources /modules/core.min.js
+GET		/ng-modules/$file<.*\.min\.js$>			controllers.Assets.at(path="/public/ng-modules", file)
+# Get sources /modules/core/_module.js
+GET		/ng-modules/*file						controllers.ExternalAssets.at(path="ng-modules", file)
 
-# Debug routes
-#GET	/					controllers.Assets.at(path="/public", file="/index.debug.html")
-#GET	/modules/*file		controllers.ExternalAssets.at(path="modules", file)
-
-# Production routes
-GET		/					controllers.Assets.at(path="/public", file="/index.html")
-GET		/modules/*file		controllers.Assets.at(path="/public/modules", file)
-
-
-GET		/*file				controllers.Assets.at(path="/public", file)
+GET		/components/*file						controllers.Assets.at(path="/public/components", file)

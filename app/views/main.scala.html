@@ -1,0 +1,88 @@
+@(title: String, headScripts: Html = Html(""), bodyScripts: Html = Html(""))
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>@title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="/components/bootstrap-2.3.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/components/bootstrap-2.3.2/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="/components/select2-3.4.1/select2.css" />
+    <link rel="stylesheet" href="/components/jquery-ui-1.10.3/themes/smoothness/jquery-ui.css" />@headScripts
+
+
+    <style type="text/css">
+    body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+    }
+    .sidebar-nav {
+        padding: 9px 0;
+    }
+    @@media (max-width: 980px) {
+        /* Enable use of floated navbar text */
+        .navbar-text.pull-right {
+            float: none;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    }
+    </style>
+
+</head>
+
+<body>
+
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="brand" href="#">Project name</a>
+                <div class="nav-collapse collapse">
+                    <p class="navbar-text pull-right">
+                        Logged in as <a href="#" class="navbar-link">Username</a>
+                    </p>
+                    <ul class="nav">
+                        <li class="active"><a href="#">Home</a>
+                        </li>
+                        <li><a href="#about">About</a>
+                        </li>
+                        <li><a href="#contact">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+
+    <div ui-view></div>
+
+    <hr>
+
+    <footer>
+        <p>&copy; Company 2013</p>
+    </footer>
+
+    <script type="text/javascript" src="/components/jquery-1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/components/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/components/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/components/select2-3.4.1/select2.min.js"></script>
+
+    <script type="text/javascript" src="/components/angular-1.0.7/angular.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-router-0.0.1/release/angular-ui-router.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-date-0.0.3/src/date.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-select2-0.0.2/src/select2.js"></script>
+
+    @bodyScripts
+
+
+</body>
+
+</html>
