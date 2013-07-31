@@ -22,7 +22,8 @@ object Application extends Controller {
     "core.min" -> List(
       "/ng-modules/core.min.js"),
     "home.src" -> List(
-      "/ng-modules/home/_module.js"),
+      "/ng-modules/home/_module.js",
+      "/ng-modules/home/projects/projects.js"),
     "home.min" -> List(
       "/ng-modules/home.min.js"),
     "projects.src" -> List(
@@ -34,26 +35,23 @@ object Application extends Controller {
     "crm.min" -> List(
       "/ng-modules/crm.min.js"))
 
-
-
-  def module(ngModule: String, mode: String, js:String = "") = Action {
+  def module(ngModule: String, mode: String, js: String = "") = Action {
 
     modulesSrc.get(ngModule + "." + mode) match {
       case Some(res) => {
 
         val efmode = Play.mode match {
-			case Mode.Prod => "min"
-			case _ => mode
-		}
+          case Mode.Prod => "min"
+          case _ => mode
+        }
 
-		val tpl = efmode match {
-			case "src" => "angular.module('core.templates', [] ); angular.module('" + ngModule + ".templates', [] );"
-			case _ => ""
-		}
+        val tpl = efmode match {
+          case "src" => "angular.module('core.templates', [] ); angular.module('" + ngModule + ".templates', [] );"
+          case _ => ""
+        }
 
-        val vars = "var js = " + Json.stringify(Json.toJson((modulesSrc.get("core." + efmode)).get ::: res )) + "," +
+        val vars = "var js = " + Json.stringify(Json.toJson((modulesSrc.get("core." + efmode)).get ::: res)) + "," +
           "mod = " + Json.stringify(Json.toJson("core" :: ngModule :: Nil)) + ";"
-
 
         val bodyScript = """
 <script>
@@ -82,17 +80,20 @@ angular.element(document).ready(function() {
 
 </script>
 """;
-		Ok(html.main(title="qwe", bodyScripts= Html(bodyScript)));
+        Ok(html.main(title = "qwe", bodyScripts = Html(bodyScript)));
       }
       case _ => NotFound
     }
 
-
   }
 
   def project(projectid: String, mode: String) = {
-    var ngModule="crm"; // Get type of project from DB
-    module(ngModule, mode, "window.app = {project:\""+projectid+"\"}");
+    var ngModule = "crm"; // Get type of project from DB
+    module(ngModule, mode, "window.app = {project:\"" + projectid + "\"}");
+  }
+
+  def redirect(url: String) = Action {
+    Redirect(url)
   }
 
 }

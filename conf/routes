@@ -3,9 +3,9 @@
 # ~~~~
 
 # Home page
-GET		/										controllers.Application.module(ngModule="home", mode="min")
-GET		/projects								controllers.Application.module(ngModule="projects", mode="min")
-GET		/projects/:projectid					controllers.Application.project(projectid, mode="min")
+GET		/										controllers.Application.module(ngModule = "home", mode = "min")
+GET		/projects								controllers.Application.redirect(url = "/#!/projects/listview")
+GET		/projects/:projectid					controllers.Application.project(projectid, mode = "min")
 
 # Get minified resources /modules/core.min.js
 GET		/ng-modules/$file<.*\.min\.js$>			controllers.Assets.at(path="/public/ng-modules", file)

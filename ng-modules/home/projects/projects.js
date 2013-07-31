@@ -1,18 +1,16 @@
-﻿angular.module('projects', ['ui.state', 'projects.templates'])
+﻿angular.module('home')
     .config(['$routeProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider',
         function($routeProvider, $locationProvider, $stateProvider, $urlRouterProvider) {
 
-            $urlRouterProvider.otherwise('/listview');
-
             var projectsList = {
                 name: 'page2C.projectList',
-                url: '/listview',
+                url: '/projects/listview',
                 views: {
                     'sidebar': {
-                        templateUrl: '/ng-modules/projects/listview/projectsListFilter.tpl.html'
+                        templateUrl: '/ng-modules/home/projects/listview/projectsListFilter.tpl.html'
                     },
                     'content': {
-                        templateUrl: '/ng-modules/projects/listview/projectsListGrid.tpl.html'
+                        templateUrl: '/ng-modules/home/projects/listview/projectsListGrid.tpl.html'
                     }
                 }
             };
@@ -51,7 +49,7 @@
             $pageConfig.setConfig({
                 breadcrumbs: [{
                     name: 'Projects',
-                    url: '/projects'
+                    url: '/#!/projects/listview'
                 }]
             });
             $scope.projects = $projectsService.getProjects({}).projects;
