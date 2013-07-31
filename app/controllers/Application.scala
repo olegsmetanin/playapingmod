@@ -9,6 +9,7 @@ import Play.current
 
 import play.api.templates._
 
+import models._
 import views._
 
 object Application extends Controller {
@@ -26,10 +27,6 @@ object Application extends Controller {
       "/ng-modules/home/projects/projects.js"),
     "home.min" -> List(
       "/ng-modules/home.min.js"),
-    "projects.src" -> List(
-      "/ng-modules/projects/_module.js"),
-    "projects.min" -> List(
-      "/ng-modules/projects.min.js"),
     "crm.src" -> List(
       "/ng-modules/crm/_module.js"),
     "crm.min" -> List(
@@ -88,8 +85,12 @@ angular.element(document).ready(function() {
   }
 
   def project(projectid: String, mode: String) = {
-    var ngModule = "crm"; // Get type of project from DB
-    module(ngModule, mode, "window.app = {project:\"" + projectid + "\"}");
+
+//module("crm", mode, "window.app = {project:\"" + projectid + "\"}");
+    Project.findByFolder(projectid) match {
+      case Some(project: Project) => module(project.prjtype, mode, "window.app = {project:\"" + projectid + "\"}");
+      case _ => Action { NotFound }
+    }
   }
 
   def redirect(url: String) = Action {

@@ -2,83 +2,79 @@
     .config(['$routeProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider',
         function($routeProvider, $locationProvider, $stateProvider, $urlRouterProvider) {
 
-            $urlRouterProvider.otherwise('/demands');
+            $urlRouterProvider.otherwise('/contracts');
 
-            var demandList = {
-                name: 'page2C.demandList',
-                url: '/demands',
+            var contractList = {
+                name: 'page2C.contractList',
+                url: '/contracts',
                 views: {
                     'sidebar': {
-                        templateUrl: '/ng-modules/crm/demands/list/demandListFilter.tpl.html'
+                        templateUrl: '/ng-modules/crm/contracts/list/contractListFilter.tpl.html'
                     },
                     'content': {
-                        templateUrl: '/ng-modules/crm/demands/list/demandListGrid.tpl.html'
+                        templateUrl: '/ng-modules/crm/contracts/list/contractListGrid.tpl.html'
                     }
                 }
             },
 
-                demandCommonTab = {
-                    name: 'tabPage1C.demandCommonTab',
-                    url: '/demands/:demandid/common',
+                contractCommonTab = {
+                    name: 'tabPage1C.contractCommonTab',
+                    url: '/contracts/:contractid/common',
                     views: {
                         'tabbar': {
-                            template: '<div ng-controller="demandTabsCtrl" tabbar="0"></div>'
+                            template: '<div ng-controller="contractTabsCtrl" tabbar="0"></div>'
                         },
                         'content': {
-                            templateUrl: '/ng-modules/crm/demands/commonTab/demandCommonTab.tpl.html'
+                            templateUrl: '/ng-modules/crm/contracts/commonTab/contractCommonTab.tpl.html'
                         }
                     }
                 },
 
-                demandOrdersTab = {
-                    name: 'tabPage2C.demandOrdersTab',
-                    url: '/demands/:demandid/orders',
+                contractTasksTab = {
+                    name: 'tabPage2C.contractTasksTab',
+                    url: '/contracts/:contractid/tasks',
                     views: {
                         'tabbar': {
-                            template: '<div ng-controller="demandTabsCtrl" tabbar="1"></div>'
+                            template: '<div ng-controller="contractTabsCtrl" tabbar="1"></div>'
                         },
                         'sidebar': {
-                            templateUrl: '/ng-modules/crm/demands/ordersTab/demandOrdersTabFilter.tpl.html'
+                            templateUrl: '/ng-modules/crm/contracts/tasksTab/contractTasksTabFilter.tpl.html'
                         },
                         'content': {
-                            templateUrl: '/ng-modules/crm/demands/ordersTab/demandOrdersTabGrid.tpl.html'
+                            templateUrl: '/ng-modules/crm/contracts/tasksTab/contractTasksTabGrid.tpl.html'
                         }
                     }
                 };
 
             $stateProvider
-                .state(demandList)
-                .state(demandCommonTab)
-                .state(demandOrdersTab);
+                .state(contractList)
+                .state(contractCommonTab)
+                .state(contractTasksTab);
 
         }
     ])
-    .service("demandService", ['$rootScope',
-        function($rootScope) {
-            this.getDemands = function(filter) {
-                return {
-                    demands: [{
-                        id: 1,
-                        name: 'Demand1'
-                    }, {
-                        id: 2,
-                        name: 'Demand2'
-                    }, {
-                        id: 3,
-                        name: 'Demand3'
-                    }, {
-                        id: 4,
-                        name: 'Demand4'
-                    }, {
-                        id: 5,
-                        name: 'Demand5'
-                    }]
-                };
+    .service("contractService", ['$q','$http',
+        function($q, $http) {
+            this.getContracts = function(filter) {
+                var deferred = $q.defer();
+                 $http.post("/api/v1", {
+                    action: "get",
+                    model: "project.contracts",
+                    project: window.app.project,
+                    filter: filter
+                }).success(function (data, status, headers, config) {
+                     deferred.resolve(data);
+                }).error(function (data, status, headers, config) {
+                    // TODO
+                });
+                return deferred.promise;
             };
         }
     ])
-    .controller('demandListGridCtrl', ['$scope', 'demandService', 'pageConfig',
-        function($scope, $demandService, $pageConfig) {
+
+
+    .controller('contractListGridCtrl', ['$scope', 'contractService', 'pageConfig',
+        function($scope, $contractService, $pageConfig) {
             $pageConfig.setConfig({
                 breadcrumbs: [{
                         name: "Projects",
@@ -87,27 +83,32 @@
                         name: window.app.project,
                         url: '/projects/'+window.app.project
                     },{
-                        name: 'Demands',
-                        url: '#!/demands'
+                        name: 'Contracts',
+                        url: '#!/contracts'
                     }]
             });
-            $scope.demands = $demandService.getDemands({}).demands;
+
+            $scope.contracts=[];
+
+            $contractService.getContracts({}).then(function (res) {
+                $scope.contracts =  res.contracts;
+            });
         }
     ])
-    .controller('demandTabsCtrl', ['$scope', '$stateParams',
+    .controller('contractTabsCtrl', ['$scope', '$stateParams',
         function($scope, $stateParams) {
             $scope.tabs = [{
                 name: 'Common',
-                url: '#!/demands/' + $stateParams.demandid + '/common'
+                url: '#!/contracts/' + $stateParams.contractid + '/common'
             }, {
-                name: 'Orders',
-                url: '#!/demands/' + $stateParams.demandid + '/orders'
+                name: 'Tasks',
+                url: '#!/contracts/' + $stateParams.contractid + '/tasks'
             }];
         }
     ])
-    .controller('demandCommonTabCtrl', ['$scope', '$stateParams', 'pageConfig',
+    .controller('contractCommonTabCtrl', ['$scope', '$stateParams', 'pageConfig',
         function($scope, $stateParams, $pageConfig) {
-            var demandid = $stateParams.demandid;
+            var contractid = $stateParams.contractid;
 
             $pageConfig.setConfig({
                 breadcrumbs: [{
@@ -117,21 +118,21 @@
                         name: window.app.project,
                         url: '/projects/'+window.app.project
                     },{
-                        name: 'Demands',
-                        url: '#!/demands'
+                        name: 'contracts',
+                        url: '#!/contracts'
                     }, {
-                        name: demandid,
-                        url: '#!/demands/' + demandid + '/common'
+                        name: contractid,
+                        url: '#!/contracts/' + contractid + '/common'
                     }
 
                 ]
             });
-            $scope.demandid = demandid;
+            $scope.contractid = contractid;
         }
     ])
 
 // Edit
-.controller('DemandItemCtrl', ['$scope', '$q', '$timeout',
+.controller('contractItemCtrl', ['$scope', '$q', '$timeout',
     function($scope, $q, $timeout) {
 
         var categories = [{
@@ -153,8 +154,8 @@
             id: 6,
             text: 'zet'
         }];
-        var demand = {
-            name: 'Demand-123',
+        var contract = {
+            name: 'contract-123',
             signedAt: new Date(2010, 01, 01),
             category: [{
                 id: 1,
@@ -174,23 +175,23 @@
             }
         };
         $scope.mode = 'View';
-        $scope.demand = angular.copy(demand);
+        $scope.contract = angular.copy(contract);
 
         $scope.edit = function() {
             $scope.mode = 'Edit';
         };
         $scope.cancel = function() {
-            $scope.demand = angular.copy(demand);
+            $scope.contract = angular.copy(contract);
             $scope.mode = 'View';
         };
         $scope.update = function() {
-            if (demandForm) {
-                demand = angular.copy($scope.demand);
+            if (contractForm) {
+                contract = angular.copy($scope.contract);
             }
             $scope.mode = 'View';
         };
         $scope.isChanged = function() {
-            return !angular.equals($scope.demand, demand);
+            return !angular.equals($scope.contract, contract);
         };
     }
 ])

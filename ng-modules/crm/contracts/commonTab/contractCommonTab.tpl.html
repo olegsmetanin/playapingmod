@@ -1,0 +1,52 @@
+<div>
+    <div ng-controller="contractCommonTabCtrl">
+        contract id:{{contractid}}
+    </div>
+    <div ng-controller="contractItemCtrl">
+
+        <div ng-switch on="mode">
+
+            <form name="contractForm" ng-switch-when="Edit">
+                <div class="control-group" ng-class="{error: contractForm.name.$invalid}">
+                    <label>Name</label>
+                    <input type="text" name="name" ng-model="contract.name" required="true" fake-server-validation class="input-medium" />
+                    <span ng-show="contractForm.name.$error.required" class="help-inline">Required field</span>
+                    <span ng-show="contractForm.name.$error.fsv" class="help-inline">Invalid name format (no hyphen)</span>
+                </div>
+                <div class="control-group" ng-class="{error: contractForm.signedAt.$invalid}">
+                    <label>Signed at</label>
+                    <input ui-date="{changeMonth: true, changeYear: true}" name="signedAt" ng-model="contract.signedAt" required class="input-medium" />
+                    <span ng-show="contractForm.signedAt.$error.required" class="help-inline">Provide sign date</span>
+                </div>
+                <div class="control-group" ng-class="{error: contractForm.category.$invalid}">
+                    <label>Category</label>
+                    <input type="text" name="category" ui-select2="categoryOptions" ng-model="contract.category" required-multiple class="input-medium" />
+                    <span ng-show="contractForm.category.$error.required" class="help-inline">Select at least one category</span>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+                    <button type="button" class="btn btn-success" ng-click="update()" ng-disabled="!isChanged() || contractForm.$invalid">Update</button>
+                </div>
+            </form>
+
+            <form ng-switch-when="View">
+                <div class="control-group">
+                    <label>Name</label>
+                    <span>{{contract.name}}</span>
+                </div>
+                <div class="control-group">
+                    <label>Signed at</label>
+                    <span>{{contract.signedAt | date:'dd MMMM yyyy'}}</span>
+                </div>
+                <div class="control-group">
+                    <label>Categories</label>
+                    <span ng-repeat="c in contract.category">{{c.text}}&nbsp;</span>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" ng-click="edit()">Edit</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

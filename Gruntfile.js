@@ -30,9 +30,6 @@ module.exports = function(grunt) {
             home: {
                 src: "ng-modules/home"
             },
-            projects: {
-                src: "ng-modules/projects"
-            },
             crm: {
                 src: "ng-modules/crm"
             }
@@ -70,11 +67,6 @@ module.exports = function(grunt) {
                 dest: '<%= builddir %>/home/templates.js',
                 module: 'home.templates'
             },
-            projects: {
-                src: ['<%= modules.projects.src %>/**/*.tpl.html'],
-                dest: '<%= builddir %>/projects/templates.js',
-                module: 'projects.templates'
-            },
             crm: {
                 src: ['<%= modules.crm.src %>/**/*.tpl.html'],
                 dest: '<%= builddir %>/crm/templates.js',
@@ -89,10 +81,6 @@ module.exports = function(grunt) {
             home: {
                 src: ['<%= modules.home.src %>/**/*.js', '<%= builddir %>/home/**/*.js'],
                 dest: '<%= distdir %>/home.js'
-            },
-            projects: {
-                src: ['<%= modules.projects.src %>/**/*.js', '<%= builddir %>/projects/**/*.js'],
-                dest: '<%= distdir %>/projects.js'
             },
             crm: {
                 src: ['<%= modules.crm.src %>/**/*.js', '<%= builddir %>/crm/**/*.js'],
@@ -110,10 +98,6 @@ module.exports = function(grunt) {
             home: {
                 src: ['<%= distdir %>/home.js'],
                 dest: '<%= pubdir %>/home.min.js'
-            },
-            project: {
-                src: ['<%= distdir %>/projects.js'],
-                dest: '<%= pubdir %>/projects.min.js'
             },
             crm: {
                 src: ['<%= distdir %>/crm.js'],
