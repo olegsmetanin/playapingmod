@@ -21,6 +21,45 @@ object APIv1 extends Controller {
   //http://www.playframework.com/documentation/2.1.x/ScalaJsonRequests
   //http://www.playframework.com/documentation/2.1.x/ScalaJsonInception
 
+  def login = Action(parse.json) { request =>
+    val json = request.body;
+    val email = (json \ "email").validate[String];
+    val password = (json \ "password").validate[String];
+
+    (email, password) match {
+      case (JsSuccess(em, _), JsSuccess(ps, _)) => {
+        (User.findByEmail(em), ps) match {
+          case (Some(user: User), user.password)  => Ok(Json.obj("user" -> JsString("found"))).withSession(
+              "user" -> em)
+          case (Some(user: User), _)  => InternalServerError(Json.obj("error" -> JsString("User password not match")))
+          case _ => InternalServerError(Json.obj("error" -> JsString("User not found")))
+        }
+
+      }
+      case _ => InternalServerError(Json.obj("error" -> JsString("Bad login request")))
+    }
+  }
+
+  def logout = Action { request =>
+    Status(204)(Json.obj("result" -> JsString("Bye"))).withNewSession
+  }
+
+  def userGroups = Action { request =>
+            Ok(Json.obj("groups" -> JsArray(JsString("admins") :: JsString("managers"):: Nil)))
+  }
+
+/*
+
+def index = Action { request =>
+  request.session.get("connected").map { user =>
+    Ok("Hello " + user)
+  }.getOrElse {
+    Unauthorized("Oops, you are not connected")
+  }
+}
+
+*/
+
   def exec = Action(parse.json) { request =>
     val json = request.body;
     val action = (json \ "action").validate[String];

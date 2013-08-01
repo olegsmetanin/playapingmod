@@ -24,9 +24,9 @@ object InitialData {
     if (User.findAll.isEmpty) {
 
       Seq(
-        User("user@sample.com", "UserName1", "password"),
-        User("user1@sample.com", "UserName2", "password"),
-        User("user2@sample.com", "UserName3", "password")).foreach(User.create)
+        User("user@sample.com", "UserName1", "111"),
+        User("user1@sample.com", "UserName2", "111"),
+        User("user2@sample.com", "UserName3", "111")).foreach(User.create)
 
       Seq(
         Project(Id(1), "play2", "crm", "Play 2.0") -> Seq("user@sample.com", "user1@sample.com", "user2@sample.com"),

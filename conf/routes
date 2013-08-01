@@ -3,11 +3,15 @@
 # ~~~~
 
 # Home page
-GET		/										controllers.Application.module(ngModule = "home", mode = "src", js="", backendMode = "fake")
+GET		/										controllers.Application.module(ngModule = "home", mode = "src", js="", backendMode = "")
 GET		/projects								controllers.Application.redirect(url = "/#!/projects/listview")
-GET		/projects/:projectid					controllers.Application.project(projectid, mode = "src", backendMode = "fake")
+GET		/projects/:projectid					controllers.Application.project(projectid, mode = "src", backendMode = "")
 
 POST	/api/v1									controllers.APIv1.exec
+
+POST	/login									controllers.APIv1.login
+POST	/logout									controllers.APIv1.logout
+POST	/user-groups							controllers.APIv1.userGroups
 
 
 # Get minified resources /modules/core.min.js

@@ -15,10 +15,10 @@
                         templateUrl: '/ng-modules/crm/contracts/list/contractListGrid.tpl.html'
                     }
                 }
-                // ,
-                // resolve: {
-                //     projectMember: securityAuthorizationProvider.requireGroups(['admins', 'managers', 'executors'])
-                // }
+                ,
+                resolve: {
+                    projectMember: securityAuthorizationProvider.requireGroups(['admins', 'managers', 'executors'])
+                }
             },
 
                 contractCommonTab = {

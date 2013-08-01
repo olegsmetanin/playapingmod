@@ -18,19 +18,19 @@ object Application extends Controller {
     "core.src" -> List(
       "/ng-modules/core/_module.js",
       "/ng-modules/core/breadcrumbs/breadcrumbsCtrl.js",
-	  "/ng-modules/core/directives/tabbar.js",
-    "/ng-modules/core/security/backendless.js",
-	  "/ng-modules/core/security/index.js",
-	  "/ng-modules/core/security/authorization.js",
-	  "/ng-modules/core/security/interceptor.js",
-	  "/ng-modules/core/security/retryQueue.js",
-	  "/ng-modules/core/security/security.js",
-	  "/ng-modules/core/security/login/login.js",
-    "/ng-modules/core/security/login/LoginFormController.js",
-	  "/ng-modules/core/security/login/toolbar.js",
+      "/ng-modules/core/directives/tabbar.js",
+      "/ng-modules/core/security/backendless.js",
+      "/ng-modules/core/security/index.js",
+      "/ng-modules/core/security/authorization.js",
+      "/ng-modules/core/security/interceptor.js",
+      "/ng-modules/core/security/retryQueue.js",
+      "/ng-modules/core/security/security.js",
+      "/ng-modules/core/security/login/login.js",
+      "/ng-modules/core/security/login/LoginFormController.js",
+      "/ng-modules/core/security/login/toolbar.js",
       "/ng-modules/core/services/services.js",
-	  "/ng-modules/core/services/localizedMessages.js",
-	  "/ng-modules/core/systemmenu/systemMenuCtrl.js"),
+      "/ng-modules/core/services/localizedMessages.js",
+      "/ng-modules/core/systemmenu/systemMenuCtrl.js"),
     "core.min" -> List(
       "/ng-modules/core.min.js"),
     "home.src" -> List(
@@ -58,16 +58,13 @@ object Application extends Controller {
           case _ => ""
         }
 
-        val mod0 = "core" :: ngModule  :: Nil
-        val mod = if (backendMode == "fake") {
-          mod0  :+ "core.security.backendless"
-        } else {
-          mod0 
+        val mod = backendMode match {
+          case "fake" => "core" :: ngModule :: "core.security.backendless" :: Nil
+          case _ => "core" :: ngModule :: Nil
         }
 
         val vars = "var js = " + Json.stringify(Json.toJson((modulesSrc.get("core." + efmode)).get ::: res)) + "," +
           "mod = " + Json.stringify(Json.toJson(mod)) + ";"
-//{if (backendMode == "fake") {"core.security.backendless"} else {Nil}}
         val bodyScript = """
 <script>
 
@@ -103,7 +100,7 @@ angular.element(document).ready(function() {
 
   }
 
-  def project(projectid: String, mode: String, backendMode: String = "") = {
+  def project(projectid: String, mode: String, backendMode: String) = {
 
     Project.findByFolder(projectid) match {
       case Some(project: Project) => module(project.prjtype, mode, "window.app = {project:\"" + projectid + "\"}", backendMode);
