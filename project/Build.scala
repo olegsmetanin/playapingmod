@@ -20,14 +20,14 @@ object ApplicationBuild extends Build {
       println("npm install:");
       "npm install" !;
       println("bower install:");
-      "bower list" !;
+      "bower install" !;
       state
     }
   }
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     commands ++= Seq(ngInit),
-    playAssetsDirectories <+= baseDirectory / "ng-modules", // Add your own project settings here
+    playAssetsDirectories <+= baseDirectory / "ng-modules",
     //(compile in Compile) <<= (compile in Compile) dependsOn (gruntTask("install"))
 
     ngBuild <<= (compile in ngBuild) map { _ =>
