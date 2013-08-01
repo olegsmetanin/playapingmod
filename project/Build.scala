@@ -13,9 +13,27 @@ object ApplicationBuild extends Build {
     jdbc,
     anorm)
 
+  val ngBuild = TaskKey[Unit]("ng-build", "Run grunt build and compile in project directory")
+
+  def ngInit = Command.command("ng-init") { state =>
+    {
+      println("npm install:");
+      "npm install" !;
+      println("bower install:");
+      "bower list" !;
+      state
+    }
+  }
+
   val main = play.Project(appName, appVersion, appDependencies).settings(
-    playAssetsDirectories <+= baseDirectory / "ng-modules" // Add your own project settings here
-    //(compile in Compile) <<= (compile in Compile) dependsOn (gruntTask(""))
-    )
+    commands ++= Seq(ngInit),
+    playAssetsDirectories <+= baseDirectory / "ng-modules", // Add your own project settings here
+    //(compile in Compile) <<= (compile in Compile) dependsOn (gruntTask("install"))
+
+    ngBuild <<= (compile in ngBuild) map { _ =>
+      "grunt build" !;
+    },
+
+    compile in ngBuild <<= (compile in Compile).identity)
 
 }
