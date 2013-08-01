@@ -13,8 +13,9 @@
         "jquery-ui-1.10.3": "jquery-ui#1.10.3",
 
         "angular-1.0.7": "angular#1.0.7",
+		"angular-mocks": "angular-mocks#1.0.7",
         "angular-ui-router-0.0.1": "angular-ui-router#0.0.1",
-        "angular-ui-bootstrap-0.4.0": "angular-ui-bootstrap#0.4.0",
+        "angular-ui-bootstrap-0.4.0": "https://github.com/angular-ui/bootstrap/archive/gh-pages.zip",
         "angular-ui-select2-0.0.2": "angular-ui-select2#0.0.2",
         "angular-ui-date-0.0.3": "angular-ui-date#0.0.3",
 

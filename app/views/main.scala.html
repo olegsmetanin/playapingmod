@@ -35,7 +35,7 @@
 <body>
 
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fixed-top" ng-controller="HeaderCtrl">
         <div class="navbar-inner">
             <div class="container-fluid">
                 <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -45,10 +45,8 @@
                 </button>
                 <a class="brand" href="#">Project name</a>
                 <div class="nav-collapse collapse">
-                    <p class="navbar-text pull-right">
-                        Logged in as <a href="#" class="navbar-link">Username</a>
-                    </p>
-                    <ul class="nav">
+                    <login-toolbar></login-toolbar>
+                    <ul class="nav" ng-show="isAuthenticated()">
                         <li class="active"><a href="#">Home</a>
                         </li>
                         <li><a href="#about">About</a>
@@ -76,9 +74,11 @@
     <script type="text/javascript" src="/components/select2-3.4.1/select2.min.js"></script>
 
     <script type="text/javascript" src="/components/angular-1.0.7/angular.js"></script>
+    <script type="text/javascript" src="/components/angular-mocks/angular-mocks.js"></script>
     <script type="text/javascript" src="/components/angular-ui-router-0.0.1/release/angular-ui-router.js"></script>
     <script type="text/javascript" src="/components/angular-ui-date-0.0.3/src/date.js"></script>
     <script type="text/javascript" src="/components/angular-ui-select2-0.0.2/src/select2.js"></script>
+	<script type="text/javascript" src="/components/angular-ui-bootstrap-0.4.0/ui-bootstrap-0.4.0.min.js"></script>
 
     @bodyScripts
 

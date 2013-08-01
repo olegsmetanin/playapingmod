@@ -17,8 +17,20 @@ object Application extends Controller {
     "core.src" -> List(
       "/ng-modules/core/_module.js",
       "/ng-modules/core/breadcrumbs/breadcrumbsCtrl.js",
-      "/ng-modules/core/directives/tabbar.js",
-      "/ng-modules/core/services/services.js"),
+      //"/ng-modules/core/directives/modal.js", conflict with angular-ui.bootstrap.dialog
+	  "/ng-modules/core/directives/tabbar.js",
+    "/ng-modules/core/security/backendless.js",
+	  "/ng-modules/core/security/index.js",
+	  "/ng-modules/core/security/authorization.js",
+	  "/ng-modules/core/security/interceptor.js",
+	  "/ng-modules/core/security/retryQueue.js",
+	  "/ng-modules/core/security/security.js",
+	  "/ng-modules/core/security/login/login.js",
+    "/ng-modules/core/security/login/LoginFormController.js",
+	  "/ng-modules/core/security/login/toolbar.js",
+      "/ng-modules/core/services/services.js",
+	  "/ng-modules/core/services/localizedMessages.js",
+	  "/ng-modules/core/systemmenu/systemMenuCtrl.js"),
     "core.min" -> List(
       "/ng-modules/core.min.js"),
     "home.src" -> List(
@@ -35,7 +47,7 @@ object Application extends Controller {
     "crm.min" -> List(
       "/ng-modules/crm.min.js"))
 
-  def module(ngModule: String, mode: String, js: String = "") = Action {
+  def module(ngModule: String, mode: String, js: String = "", backendMode: String = "") = Action {
 
     modulesSrc.get(ngModule + "." + mode) match {
       case Some(res) => {
@@ -50,9 +62,16 @@ object Application extends Controller {
           case _ => ""
         }
 
-        val vars = "var js = " + Json.stringify(Json.toJson((modulesSrc.get("core." + efmode)).get ::: res)) + "," +
-          "mod = " + Json.stringify(Json.toJson("core" :: ngModule :: Nil)) + ";"
+        val mod0 = "core" :: ngModule  :: Nil
+        val mod = if (backendMode == "fake") {
+          mod0  :+ "core.security.backendless"
+        } else {
+          mod0 
+        }
 
+        val vars = "var js = " + Json.stringify(Json.toJson((modulesSrc.get("core." + efmode)).get ::: res)) + "," +
+          "mod = " + Json.stringify(Json.toJson(mod)) + ";"
+//{if (backendMode == "fake") {"core.security.backendless"} else {Nil}}
         val bodyScript = """
 <script>
 
@@ -73,6 +92,7 @@ addScripts(js);
 """ + tpl + js + """
 
 angular.element(document).ready(function() {
+    //mod.push("core.security.backendless")
     angular.bootstrap(document, mod);
 });
 
@@ -87,9 +107,9 @@ angular.element(document).ready(function() {
 
   }
 
-  def project(projectid: String, mode: String) = {
+  def project(projectid: String, mode: String, backendMode: String = "") = {
     var ngModule = "crm"; // Get type of project from DB
-    module(ngModule, mode, "window.app = {project:\"" + projectid + "\"}");
+    module(ngModule, mode, "window.app = {project:\"" + projectid + "\"}", backendMode);
   }
 
   def redirect(url: String) = Action {

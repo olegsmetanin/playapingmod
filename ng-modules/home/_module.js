@@ -1,4 +1,4 @@
-angular.module('home', ['ui.state', 'home.templates']);
+angular.module('home', ['core', 'ui.state', 'home.templates']);
 
 angular.module('home')
     .config(['$routeProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider',

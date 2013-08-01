@@ -1,6 +1,6 @@
-﻿angular.module('crm', ['ui.state', 'ui.select2', 'ui.date',  'crm.templates'])
-    .config(['$routeProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider',
-        function($routeProvider, $locationProvider, $stateProvider, $urlRouterProvider) {
+﻿angular.module('crm', ['ui.state', 'ui.select2', 'ui.date', 'core.security', 'crm.templates'])
+    .config(['$routeProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', 'securityAuthorizationProvider',
+        function($routeProvider, $locationProvider, $stateProvider, $urlRouterProvider, securityAuthorizationProvider) {
 
             $urlRouterProvider.otherwise('/demands');
 
@@ -14,6 +14,9 @@
                     'content': {
                         templateUrl: '/ng-modules/crm/demands/list/demandListGrid.tpl.html'
                     }
+                },
+                resolve: {
+                    projectMember: securityAuthorizationProvider.requireGroups(['admins', 'managers', 'executors'])
                 }
             },
 
