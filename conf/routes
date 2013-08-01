@@ -3,9 +3,9 @@
 # ~~~~
 
 # Home page
-GET		/										controllers.Application.module(ngModule = "home", mode = "min")
+GET		/										controllers.Application.module(ngModule = "home", mode = "src")
 GET		/projects								controllers.Application.redirect(url = "/#!/projects/listview")
-GET		/projects/:projectid					controllers.Application.project(projectid, mode = "min")
+GET		/projects/:projectid					controllers.Application.project(projectid, mode = "src")
 
 POST	/api/v1									controllers.APIv1.exec
 
