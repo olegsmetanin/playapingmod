@@ -9,8 +9,9 @@ object ApplicationBuild extends Build {
   val appName = "playapingmod"
   val appVersion = "1.0"
 
-  val appDependencies = Seq( // Add your project dependencies here,
-  )
+  val appDependencies = Seq(
+    jdbc,
+    anorm)
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     playAssetsDirectories <+= baseDirectory / "ng-modules" // Add your own project settings here

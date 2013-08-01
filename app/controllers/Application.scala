@@ -9,6 +9,7 @@ import Play.current
 
 import play.api.templates._
 
+import models._
 import views._
 
 object Application extends Controller {
@@ -17,7 +18,6 @@ object Application extends Controller {
     "core.src" -> List(
       "/ng-modules/core/_module.js",
       "/ng-modules/core/breadcrumbs/breadcrumbsCtrl.js",
-      //"/ng-modules/core/directives/modal.js", conflict with angular-ui.bootstrap.dialog
 	  "/ng-modules/core/directives/tabbar.js",
     "/ng-modules/core/security/backendless.js",
 	  "/ng-modules/core/security/index.js",
@@ -38,10 +38,6 @@ object Application extends Controller {
       "/ng-modules/home/projects/projects.js"),
     "home.min" -> List(
       "/ng-modules/home.min.js"),
-    "projects.src" -> List(
-      "/ng-modules/projects/_module.js"),
-    "projects.min" -> List(
-      "/ng-modules/projects.min.js"),
     "crm.src" -> List(
       "/ng-modules/crm/_module.js"),
     "crm.min" -> List(
@@ -108,8 +104,11 @@ angular.element(document).ready(function() {
   }
 
   def project(projectid: String, mode: String, backendMode: String = "") = {
-    var ngModule = "crm"; // Get type of project from DB
-    module(ngModule, mode, "window.app = {project:\"" + projectid + "\"}", backendMode);
+
+    Project.findByFolder(projectid) match {
+      case Some(project: Project) => module(project.prjtype, mode, "window.app = {project:\"" + projectid + "\"}", backendMode);
+      case _ => Action { NotFound }
+    }
   }
 
   def redirect(url: String) = Action {

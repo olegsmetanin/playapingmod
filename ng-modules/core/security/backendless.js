@@ -21,7 +21,7 @@ angular.module('core.security.backendless', ['core', 'ngMockE2E'])
 	var users = [admin, ivanov, petrov, sidorov];
 
 	var projMatrix = {
-		prj1: {
+		play2: {
 			admins: [ivanov],
 			managers: [ivanov, petrov],
 			executors: [sidorov]
@@ -80,4 +80,5 @@ angular.module('core.security.backendless', ['core', 'ngMockE2E'])
 
 	//all others
 	$httpBackend.whenGET(/^(projects|ng-modules|components)*/).passThrough();
+	$httpBackend.whenPOST(/^(\/api)*/).passThrough();
 }]);

@@ -7,6 +7,9 @@ GET		/										controllers.Application.module(ngModule = "home", mode = "src", 
 GET		/projects								controllers.Application.redirect(url = "/#!/projects/listview")
 GET		/projects/:projectid					controllers.Application.project(projectid, mode = "src", backendMode = "fake")
 
+POST	/api/v1									controllers.APIv1.exec
+
+
 # Get minified resources /modules/core.min.js
 GET		/ng-modules/$file<.*\.min\.js$>			controllers.Assets.at(path="/public/ng-modules", file)
 # Get sources /modules/core/_module.js

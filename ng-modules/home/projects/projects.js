@@ -20,27 +20,20 @@
 
         }
     ])
-    .service("projectsService", ['$rootScope',
-        function($rootScope) {
+    .service("projectsService", ['$q','$http',
+        function($q, $http) {
             this.getProjects = function(filter) {
-                return {
-                    projects: [{
-                        id: 'prj1',
-                        name: 'Project1'
-                    }, {
-                        id: 'prj2',
-                        name: 'Project2'
-                    }, {
-                        id: 'prj3',
-                        name: 'Project3'
-                    }, {
-                        id: 'prj4',
-                        name: 'Project4'
-                    }, {
-                        id: 'prj5',
-                        name: 'Project5'
-                    }]
-                };
+                var deferred = $q.defer();
+                 $http.post("/api/v1", {
+                    action: "get",
+                    model: "projects",
+                    filter: filter
+                }).success(function (data, status, headers, config) {
+                     deferred.resolve(data);
+                }).error(function (data, status, headers, config) {
+                    // TODO
+                });
+                return deferred.promise;
             };
         }
     ])
@@ -52,6 +45,9 @@
                     url: '/#!/projects/listview'
                 }]
             });
-            $scope.projects = $projectsService.getProjects({}).projects;
+            $scope.projects = [];
+            $projectsService.getProjects({}).then(function (res) {
+                $scope.projects = res.projects;
+             });
         }
     ]);
