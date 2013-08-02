@@ -12,7 +12,7 @@ POST	/api/v1									controllers.APIv1.exec
 POST	/login									controllers.APIv1.login
 POST	/logout									controllers.APIv1.logout
 POST	/user-groups							controllers.APIv1.userGroups
-
+POST	/current-user							controllers.APIv1.currentUser
 
 # Get minified resources /modules/core.min.js
 GET		/ng-modules/$file<.*\.min\.js$>			controllers.Assets.at(path="/public/ng-modules", file)

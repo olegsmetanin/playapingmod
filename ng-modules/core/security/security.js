@@ -89,7 +89,7 @@ angular.module('security.service', [
       if ( service.isAuthenticated() ) {
         return $q.when(service.currentUser);
       } else {
-        return $http.get('/current-user').then(function(response) {
+        return $http.post('/current-user').then(function(response) {
           service.currentUser = response.data.user;
           service.currentProject = service.currentUserGroups = null;
           return service.currentUser;
@@ -106,7 +106,7 @@ angular.module('security.service', [
     isAuthenticated: function(){
       return !!service.currentUser;
     },
-    
+
     // Is the current user an adminstrator?
     isAdmin: function() {
       return !!(service.currentUser && service.currentUser.admin);

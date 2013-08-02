@@ -29,9 +29,9 @@ object APIv1 extends Controller {
     (email, password) match {
       case (JsSuccess(em, _), JsSuccess(ps, _)) => {
         (User.findByEmail(em), ps) match {
-          case (Some(user: User), user.password)  => Ok(Json.obj("user" -> JsString("found"))).withSession(
-              "user" -> em)
-          case (Some(user: User), _)  => InternalServerError(Json.obj("error" -> JsString("User password not match")))
+          case (Some(user: User), user.password) => Ok(Json.obj("user" -> JsString("found"))).withSession(
+            "user" -> em)
+          case (Some(user: User), _) => InternalServerError(Json.obj("error" -> JsString("User password not match")))
           case _ => InternalServerError(Json.obj("error" -> JsString("User not found")))
         }
 
@@ -45,10 +45,18 @@ object APIv1 extends Controller {
   }
 
   def userGroups = Action { request =>
-            Ok(Json.obj("groups" -> JsArray(JsString("admins") :: JsString("managers"):: Nil)))
+    Ok(Json.obj("groups" -> JsArray(JsString("admins") :: JsString("managers") :: Nil)))
   }
 
-/*
+  def currentUser = Action { request =>
+    request.session.get("user").map { user =>
+      Ok(Json.obj("user" -> JsString(user)))
+    }.getOrElse {
+      InternalServerError(Json.obj("error" -> JsString("Not logged in")))
+    }
+  }
+
+  /*
 
 def index = Action { request =>
   request.session.get("connected").map { user =>
