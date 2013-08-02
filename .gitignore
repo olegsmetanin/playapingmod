@@ -16,3 +16,4 @@ node_modules
 ng-modules/build
 ng-modules/dist
 public/components
+public/ng-modules

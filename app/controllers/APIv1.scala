@@ -29,7 +29,7 @@ object APIv1 extends Controller {
     (email, password) match {
       case (JsSuccess(em, _), JsSuccess(ps, _)) => {
         (User.findByEmail(em), ps) match {
-          case (Some(user: User), user.password) => Ok(Json.obj("user" -> JsString("found"))).withSession(
+          case (Some(user: User), user.password) => Ok(Json.obj("user" -> Json.toJson(User.userInfo(user)))).withSession(
             "user" -> em)
           case (Some(user: User), _) => InternalServerError(Json.obj("error" -> JsString("User password not match")))
           case _ => InternalServerError(Json.obj("error" -> JsString("User not found")))
@@ -44,15 +44,36 @@ object APIv1 extends Controller {
     Status(204)(Json.obj("result" -> JsString("Bye"))).withNewSession
   }
 
-  def userGroups = Action { request =>
-    Ok(Json.obj("groups" -> JsArray(JsString("admins") :: JsString("managers") :: Nil)))
+  def userGroups = Action(parse.json) { request =>
+    //grab project code from json request
+    val json = request.body;
+    val project = (json \ "project").validate[String];
+    //validate
+    (project) match {
+      case JsSuccess(proj, _) => {
+        //find project by code and get current user email from session
+        (Project.findByFolder(proj), request.session.get("user")) match {
+          case (Some(project:Project), Some(email:String)) => {
+            val groups = Project.findUserGroups(project, email);
+            Ok(Json.obj("groups" -> Json.toJson(groups)))
+          }
+          case _ => InternalServerError(Json.obj("error" -> JsString("Project or user not found")))
+        }
+      }
+      case _ => InternalServerError(Json.obj("error" -> JsString("Project not found in request")))
+    }
   }
 
   def currentUser = Action { request =>
-    request.session.get("user").map { user =>
-      Ok(Json.obj("user" -> JsString(user)))
-    }.getOrElse {
-      InternalServerError(Json.obj("error" -> JsString("Not logged in")))
+    request.session.get("user").map { sessKey => 
+          User.findByEmail(sessKey) match {
+            case Some(u:User) => 
+              Ok(Json.obj("user" -> Json.toJson(User.userInfo(u))))
+            case _ => 
+              InternalServerError(Json.obj("error" -> JsString("User not found")))
+          }
+   }.getOrElse {
+      Ok(Json.obj("user" -> JsNull))
     }
   }
 
@@ -72,10 +93,12 @@ def index = Action { request =>
     val json = request.body;
     val action = (json \ "action").validate[String];
     val model = (json \ "model").validate[String];
+    var email = request.session.get("user");
 
-    (action, model) match {
-      case (JsSuccess("get", _), JsSuccess("projects", _)) => getProjects(json)
-      case (JsSuccess("get", _), JsSuccess("project.contracts", _)) => getContracts(json)
+    (action, model, email) match {
+      case (JsSuccess("get", _), JsSuccess("projects", _), None ) => Unauthorized("Unexpected Json data")
+      case (JsSuccess("get", _), JsSuccess("projects", _), Some(user: String)) => getProjects(json)
+      case (JsSuccess("get", _), JsSuccess("project.contracts", _), _ ) => getContracts(json)
       case _ => BadRequest("Unexpected Json data")
     }
   }

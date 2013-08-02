@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET		/										controllers.Application.module(ngModule = "home", mode = "src", js="", backendMode = "")
+GET		/										controllers.Application.moduleAction(ngModule = "home", mode = "src", js="angular.module('core').constant('currentProject', null).constant('userGroups', []);", backendMode = "")
 GET		/projects								controllers.Application.redirect(url = "/#!/projects/listview")
 GET		/projects/:projectid					controllers.Application.project(projectid, mode = "src", backendMode = "")
 

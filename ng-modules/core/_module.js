@@ -49,4 +49,9 @@ angular.module('core')
     })
     .controller('HeaderCtrl', ['$scope', 'security', function($scope, security) {
         $scope.isAuthenticated = security.isAuthenticated;
+    }])
+    .run(['security', function(security) {
+      // Get the current user when the application starts
+      // (in case they are still logged in from a previous session or on project change)
+      security.requestCurrentUser();
     }]);

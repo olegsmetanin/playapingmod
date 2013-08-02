@@ -5,7 +5,8 @@ angular.module('security.service', [
   'ui.bootstrap.dialog'     // Used to display the login form as a modal dialog.
 ])
 
-.factory('security', ['$http', '$q', '$location', 'securityRetryQueue', '$dialog', function($http, $q, $location, queue, $dialog) {
+.factory('security', ['$http', '$q', '$location', 'securityRetryQueue', '$dialog', 'currentProject', 'userGroups',
+  function($http, $q, $location, queue, $dialog, currentProject, userGroups) {
 
   // Redirect to the given url (defaults to '/')
   function redirect(url) {
@@ -63,10 +64,10 @@ angular.module('security.service', [
       var request = $http.post('/login', {email: email, password: password});
       return request.then(function(response) {
         service.currentUser = response.data.user;
-        service.currentProject = service.currentUserGroups = null;
         if ( service.isAuthenticated() ) {
           closeLoginDialog(true);
         }
+        service.currentUserGroups = null;
       });
     },
 
@@ -79,7 +80,7 @@ angular.module('security.service', [
     // Logout the current user and redirect
     logout: function(redirectTo) {
       $http.post('/logout').then(function() {
-        service.currentUser = service.currentProject = service.currentUserGroups = null;
+        service.currentUser = null;
         redirect(redirectTo);
       });
     },
@@ -91,7 +92,6 @@ angular.module('security.service', [
       } else {
         return $http.post('/current-user').then(function(response) {
           service.currentUser = response.data.user;
-          service.currentProject = service.currentUserGroups = null;
           return service.currentUser;
         });
       }
@@ -99,8 +99,7 @@ angular.module('security.service', [
 
     // Information about the current user
     currentUser: null,
-    currentProject: null,
-    currentUserGroups: null,
+    currentUserGroups: userGroups,
 
     // Is the current user authenticated?
     isAuthenticated: function(){
@@ -115,14 +114,18 @@ angular.module('security.service', [
     //Ask the backend about user groups in provided project
     requestUserGroups: function(proj) {
       if ( !service.isAuthenticated() ) {
-        return $q.when([]);
+        return service.requestCurrentUser().then(function() {
+          return $http.post('/user-groups', {project: proj}).then(function(response) {
+            service.currentUserGroups = response.data.groups;
+            return service.currentUserGroups;
+          });
+        });
       }
-      else if (service.currentProject && service.currentProject === proj) {
-        return $q.when(service.currentUserGroups);
+      else if (service.currentUserGroups !== null) {
+        return $q.when(userGroups);
       }
       else {
-        return $http.post('/user-groups', {project: proj, userId: service.currentUser.id}).then(function(response) {
-          service.currentProject = proj;
+        return $http.post('/user-groups', {project: proj}).then(function(response) {
           service.currentUserGroups = response.data.groups;
           return service.currentUserGroups;
         });

@@ -24,17 +24,17 @@ object InitialData {
     if (User.findAll.isEmpty) {
 
       Seq(
-        User("user@sample.com", "UserName1", "111"),
-        User("user1@sample.com", "UserName2", "111"),
-        User("user2@sample.com", "UserName3", "111")).foreach(User.create)
+        User("user@sample.com", "UserName1", "111", true),
+        User("user1@sample.com", "UserName2", "111", false),
+        User("user2@sample.com", "UserName3", "111", false)).foreach(User.create)
 
       Seq(
-        Project(Id(1), "play2", "crm", "Play 2.0") -> Seq("user@sample.com", "user1@sample.com", "user2@sample.com"),
-        Project(Id(2), "prj2", "crm", "Play 1.2.4") -> Seq("user@sample.com", "user1@sample.com"),
-        Project(Id(3), "prj3", "crm", "Website") -> Seq("user@sample.com", "user1@sample.com"),
-        Project(Id(4), "prj4", "crm", "Secret project") -> Seq("user@sample.com", "user1@sample.com", "user2@sample.com"),
-        Project(Id(5), "prj5", "crm", "Playmate") -> Seq("user1@sample.com"),
-        Project(Id(6), "prj6", "crm", "Things to do") -> Seq("user2@sample.com")).foreach {
+        Project(Id(1), "play2", "crm", "Play 2.0") -> Seq(("user@sample.com", "admins"), ("user1@sample.com", "managers"), ("user2@sample.com", "executors")),
+        Project(Id(2), "prj2", "crm", "Play 1.2.4") -> Seq(("user@sample.com", "admins"), ("user1@sample.com", "managers")),
+        Project(Id(3), "prj3", "crm", "Website") -> Seq(("user@sample.com", "admins"), ("user1@sample.com", "executors")),
+        Project(Id(4), "prj4", "crm", "Secret project") -> Seq(("user@sample.com", "managers"), ("user1@sample.com", "executors"), ("user2@sample.com", "executors")),
+        Project(Id(5), "prj5", "crm", "Playmate") -> Seq(("user1@sample.com", "admins")),
+        Project(Id(6), "prj6", "crm", "Things to do") -> Seq(("user2@sample.com", "admins"))).foreach {
           case (project, members) => Project.create(project, members)
         }
 
@@ -56,7 +56,5 @@ object InitialData {
         }
 
     }
-
   }
-
 }

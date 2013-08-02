@@ -18,7 +18,7 @@ angular.module('security.authorization', ['security.service'])
       }]; };
 
 
-      this.$get = ['security', 'securityRetryQueue', function(security, queue) {
+      this.$get = ['security', 'securityRetryQueue', 'currentProject', function(security, queue, currentProject) {
         var service = {
 
           // Require that there is an authenticated user
@@ -46,7 +46,7 @@ angular.module('security.authorization', ['security.service'])
           // Require that there is an authenticated user, current project,
           // and current user in any of requested groups of current project
           requireGroups: function(requiredGroups) {
-            var promise = security.requestUserGroups('prj1').then(function(groups) {
+            var promise = security.requestUserGroups(currentProject).then(function(groups) {
               var found = false;
               for(var groupIndex = 0; groupIndex < requiredGroups.length; groupIndex++) {
                 var requiredGroup = requiredGroups[groupIndex];

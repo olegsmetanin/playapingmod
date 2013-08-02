@@ -2,11 +2,20 @@ package models
 
 import play.api.db._
 import play.api.Play.current
+import play.api.libs.json._
 
 import anorm._
 import anorm.SqlParser._
 
-case class User(email: String, name: String, password: String)
+case class User(email: String, name: String, password: String, isAdmin: Boolean)
+case class UserInfo(email: String, name: String, isAdmin: Boolean)
+
+object UserInfo {
+  /**
+   * Serialize a UserInfo to json
+   */
+  implicit val userInfoWrites = Json.writes[UserInfo]  
+}
 
 object User {
 
@@ -18,9 +27,18 @@ object User {
   val simple = {
     get[String]("user.email") ~
     get[String]("user.name") ~
-    get[String]("user.password") map {
-      case email~name~password => User(email, name, password)
+    get[String]("user.password") ~
+    get[Boolean]("user.is_admin") map {
+      case email~name~password~isAdmin => User(email, name, password, isAdmin)
     }
+  }
+
+
+  /**
+   * Serialize a User to UserInfo DTO
+   */
+  def userInfo(u: User): UserInfo = {
+    UserInfo(u.email, u.name, u.isAdmin)
   }
 
   // -- Queries
@@ -70,13 +88,14 @@ object User {
       SQL(
         """
           insert into user values (
-            {email}, {name}, {password}
+            {email}, {name}, {password}, {is_admin}
           )
         """
       ).on(
         'email -> user.email,
         'name -> user.name,
-        'password -> user.password
+        'password -> user.password,
+        'is_admin -> user.isAdmin
       ).executeUpdate()
 
       user

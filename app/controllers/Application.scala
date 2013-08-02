@@ -43,7 +43,11 @@ object Application extends Controller {
     "crm.min" -> List(
       "/ng-modules/crm.min.js"))
 
-  def module(ngModule: String, mode: String, js: String = "", backendMode: String = "") = Action {
+  def moduleAction(ngModule: String, mode: String, js: String, backendMode: String = "") = Action {
+            module(ngModule, mode, js , backendMode);
+  }
+
+  def module(ngModule: String, mode: String, js: String = "", backendMode: String = "") =  {
 
     modulesSrc.get(ngModule + "." + mode) match {
       case Some(res) => {
@@ -65,6 +69,7 @@ object Application extends Controller {
 
         val vars = "var js = " + Json.stringify(Json.toJson((modulesSrc.get("core." + efmode)).get ::: res)) + "," +
           "mod = " + Json.stringify(Json.toJson(mod)) + ";"
+
         val bodyScript = """
 <script>
 
@@ -82,10 +87,9 @@ function addScripts(js) {
 
 addScripts(js);
 
-""" + tpl + js + """
-
+""" + tpl + """
 angular.element(document).ready(function() {
-    //mod.push("core.security.backendless")
+    """ + js + """
     angular.bootstrap(document, mod);
 });
 
@@ -100,13 +104,25 @@ angular.element(document).ready(function() {
 
   }
 
-  def project(projectid: String, mode: String, backendMode: String) = {
+  def project(projectid: String, mode: String, backendMode: String) = Action { request => {
+    (Project.findByFolder(projectid),  request.session.get("user")) match {
+      case (Some(project:Project), Some(user:String)) => {
+        val groups = Project.findUserGroups(project, user)
+        module(project.prjtype, mode, 
+               "window.app = {project:\"" + projectid + "\"}; \n" + 
+               "angular.module('core').constant('currentProject', '" + projectid + "')\n" + 
+               ".constant('userGroups', "+Json.stringify(Json.toJson(groups))+")",
+               backendMode); 
+      }
 
-    Project.findByFolder(projectid) match {
-      case Some(project: Project) => module(project.prjtype, mode, "window.app = {project:\"" + projectid + "\"}", backendMode);
-      case _ => Action { NotFound }
+            case _ =>  NotFound
+      }
+
     }
+
   }
+
+
 
   def redirect(url: String) = Action {
     Redirect(url)

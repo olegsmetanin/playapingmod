@@ -14,9 +14,9 @@
                     'content': {
                         templateUrl: '/ng-modules/crm/contracts/list/contractListGrid.tpl.html'
                     }
-                }
-                ,
+                },
                 resolve: {
+                    //authUser: securityAuthorizationProvider.requireAuthenticatedUser()
                     projectMember: securityAuthorizationProvider.requireGroups(['admins', 'managers', 'executors'])
                 }
             },

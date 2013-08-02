@@ -24,6 +24,13 @@ object Project {
     }
   }
 
+val groups = {
+    get[String]("project_member.group_name") map {
+      case groupname => groupname
+    }
+  }
+
+
   // -- Queries
 
   /**
@@ -65,6 +72,23 @@ object Project {
       ).on(
         'email -> user
       ).as(Project.simple *)
+    }
+  }
+
+  /**
+   * Retrieve user groups in project
+   */
+  def findUserGroups(project: Project, user: String): Seq[String] = {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+          select distinct group_name from project_member
+          where project_member.user_email = {email} and project_member.project_id = {id}
+        """
+      ).on(
+        'email -> user,
+        'id -> project.id
+      ).as(Project.groups *)
     }
   }
 
@@ -174,7 +198,7 @@ object Project {
   /**
    * Create a Project.
    */
-  def create(project: Project, members: Seq[String]): Project = {
+  def create(project: Project, members: Seq[(String, String)]): Project = {
      DB.withTransaction { implicit connection =>
 
        // Get the project id
@@ -197,8 +221,8 @@ object Project {
        ).executeUpdate()
 
        // Add members
-       members.foreach { email =>
-         SQL("insert into project_member values ({id}, {email})").on('id -> id, 'email -> email).executeUpdate()
+       members.foreach { ui =>
+         SQL("insert into project_member values ({id}, {email}, {group})").on('id -> id, 'email -> ui._1, 'group -> ui._2).executeUpdate()
        }
 
        project.copy(id = Id(id))
