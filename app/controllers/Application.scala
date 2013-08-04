@@ -39,7 +39,8 @@ object Application extends Controller {
     "home.min" -> List(
       "/ng-modules/home.min.js"),
     "crm.src" -> List(
-      "/ng-modules/crm/_module.js"),
+      "/ng-modules/crm/_module.js",
+      "/ng-modules/crm/contracts/list/contractListFilterCtrl.js"),
     "crm.min" -> List(
       "/ng-modules/crm.min.js"))
 
@@ -108,11 +109,11 @@ angular.element(document).ready(function() {
     (Project.findByFolder(projectid),  request.session.get("user")) match {
       case (Some(project:Project), Some(user:String)) => {
         val groups = Project.findUserGroups(project, user)
-        module(project.prjtype, mode, 
-               "window.app = {project:\"" + projectid + "\"}; \n" + 
-               "angular.module('core').constant('currentProject', '" + projectid + "')\n" + 
+        module(project.prjtype, mode,
+               "window.app = {project:\"" + projectid + "\"}; \n" +
+               "angular.module('core').constant('currentProject', '" + projectid + "')\n" +
                ".constant('userGroups', "+Json.stringify(Json.toJson(groups))+")",
-               backendMode); 
+               backendMode);
       }
 
             case _ =>  NotFound
