@@ -181,6 +181,8 @@
         $scope.contract = angular.copy(contract);
 
         $scope.cancel = function() {
+            //WTF?? where this method?? contractForm.$setPristine();
+            //$scope.contractForm.$pristine = true;
             $scope.contract = angular.copy(contract);
         };
         $scope.update = function() {
