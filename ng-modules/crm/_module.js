@@ -178,21 +178,15 @@
                 }, 400);
             }
         };
-        $scope.mode = 'View';
         $scope.contract = angular.copy(contract);
 
-        $scope.edit = function() {
-            $scope.mode = 'Edit';
-        };
         $scope.cancel = function() {
             $scope.contract = angular.copy(contract);
-            $scope.mode = 'View';
         };
         $scope.update = function() {
             if (contractForm) {
                 contract = angular.copy($scope.contract);
             }
-            $scope.mode = 'View';
         };
         $scope.isChanged = function() {
             return !angular.equals($scope.contract, contract);
