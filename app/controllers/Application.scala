@@ -30,6 +30,12 @@ object Application extends Controller {
       "/ng-modules/core/security/login/toolbar.js",
       "/ng-modules/core/services/services.js",
       "/ng-modules/core/services/localizedMessages.js",
+
+      // "/ng-modules/core/filters/ago-filter-builder.js",
+      // "/ng-modules/core/filters/ago-jquery-helpers.js",
+      // "/ng-modules/core/filters/ago-jquery-structured-filter.js",
+      // "/ng-modules/core/filters/ago-jquery-custom-properties-filter.js",
+
       "/ng-modules/core/systemmenu/systemMenuCtrl.js"),
     "core.min" -> List(
       "/ng-modules/core.min.js"),
@@ -45,18 +51,18 @@ object Application extends Controller {
       "/ng-modules/crm.min.js"))
 
   def moduleAction(ngModule: String, mode: String, js: String, backendMode: String = "") = Action {
-            module(ngModule, mode, js , backendMode);
+    module(ngModule, mode, js, backendMode);
   }
 
-  def module(ngModule: String, mode: String, js: String = "", backendMode: String = "") =  {
+  def module(ngModule: String, mode: String, js: String = "", backendMode: String = "") = {
 
-    modulesSrc.get(ngModule + "." + mode) match {
+    val efmode = Play.mode match {
+      case Mode.Prod => "min"
+      case _ => mode
+    }
+
+    modulesSrc.get(ngModule + "." + efmode) match {
       case Some(res) => {
-
-        val efmode = Play.mode match {
-          case Mode.Prod => "min"
-          case _ => mode
-        }
 
         val tpl = efmode match {
           case "src" => "angular.module('core.templates', [] ); angular.module('" + ngModule + ".templates', [] );"
@@ -105,25 +111,24 @@ angular.element(document).ready(function() {
 
   }
 
-  def project(projectid: String, mode: String, backendMode: String) = Action { request => {
-    (Project.findByFolder(projectid),  request.session.get("user")) match {
-      case (Some(project:Project), Some(user:String)) => {
-        val groups = Project.findUserGroups(project, user)
-        module(project.prjtype, mode,
-               "window.app = {project:\"" + projectid + "\"}; \n" +
-               "angular.module('core').constant('currentProject', '" + projectid + "')\n" +
-               ".constant('userGroups', "+Json.stringify(Json.toJson(groups))+")",
-               backendMode);
-      }
+  def project(projectid: String, mode: String, backendMode: String) = Action { request =>
+    {
+      (Project.findByFolder(projectid), request.session.get("user")) match {
+        case (Some(project: Project), Some(user: String)) => {
+          val groups = Project.findUserGroups(project, user)
+          module(project.prjtype, mode,
+            "window.app = {project:\"" + projectid + "\"}; \n" +
+              "angular.module('core').constant('currentProject', '" + projectid + "')\n" +
+              ".constant('userGroups', " + Json.stringify(Json.toJson(groups)) + ")",
+            backendMode);
+        }
 
-            case _ =>  NotFound
+        case _ => NotFound
       }
 
     }
 
   }
-
-
 
   def redirect(url: String) = Action {
     Redirect(url)
