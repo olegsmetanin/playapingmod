@@ -52,11 +52,11 @@
 
             $scope.templatesConfig = function(projectId) {
                 if (projectId && projectId.indexOf('play') >= 0) {
-                    return 'ng-modules/home/projects/listview/details/playProjectDetails.tpl.html'
+                    return '/ng-modules/home/projects/listview/details/playProjectDetails.tpl.html';
                 } else {
-                    return 'ng-modules/home/projects/listview/details/otherProjectDetails.tpl.html'
+                    return '/ng-modules/home/projects/listview/details/otherProjectDetails.tpl.html';
                 }
-            }
+            };
             $scope.projectDetailsTemplate = '';
 
             $scope.showDetails = function(projectId) {
