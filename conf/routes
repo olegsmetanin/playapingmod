@@ -20,3 +20,5 @@ GET		/ng-modules/$file<.*\.min\.js$>			controllers.Assets.at(path="/public/ng-mo
 GET		/ng-modules/*file						controllers.ExternalAssets.at(path="ng-modules", file)
 
 GET		/components/*file						controllers.Assets.at(path="/public/components", file)
+
+GET		/css/*file								controllers.Assets.at(path="/public/css", file)
