@@ -35,9 +35,10 @@
 
         <tab heading="Complex">
             This is complex filter
-            <input type="text" filter-complex/>
+            <div filter-complex filter-ng-model="filter.complex" meta="meta" path="'AGO.Docstore.Model.Documents.DocumentModel'"></div>
+            jQuery
             <div id="structuredFilter"></div>
-
+            <button id="restore">restore</button>
 <script>
 var meta= {
   "AGO.Docstore.Model.Documents.DocumentCustomPropertyModel": {
@@ -710,12 +711,16 @@ var meta= {
   }
 }
 
-// $('#structuredFilter').structuredFilter({
-//     meta: meta,
-//     path: 'AGO.Docstore.Model.Documents.DocumentModel',
-//     change: function (e, eventType) {
-//     }
-//    });
+$('#structuredFilter').structuredFilter({
+    meta: meta,
+    path: 'AGO.Docstore.Model.Documents.DocumentModel',
+    change: function (e, eventType) {
+    }
+   });
+
+$('#restore').on('click', function () {
+    $('#structuredFilter').structuredFilter('data', {"op":"&&","items":[{"op":"&&","items":[{"op":"=","items":[],"path":"SeqNumber","value":"1","not":false}],"path":"","value":"","not":false}]})
+})
 </script>
 
 
