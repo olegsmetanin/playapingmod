@@ -18,7 +18,7 @@ object Application extends Controller {
     "core.src" -> List(
       "/ng-modules/core/_module.js",
       "/ng-modules/core/breadcrumbs/breadcrumbsCtrl.js",
-      "/ng-modules/core/directives/tabbar.js",
+      "/ng-modules/core/tabbar/tabbar.js",
       "/ng-modules/core/security/backendless.js",
       "/ng-modules/core/security/index.js",
       "/ng-modules/core/security/authorization.js",
@@ -31,11 +31,11 @@ object Application extends Controller {
       "/ng-modules/core/services/services.js",
       "/ng-modules/core/services/localizedMessages.js",
 
-      "/ng-modules/core/filters/ago-filter-builder.js",
-      "/ng-modules/core/filters/ago-jquery-helpers.js",
-      "/ng-modules/core/filters/ago-jquery-structured-filter.js",
-      "/ng-modules/core/filters/ago-jquery-custom-properties-filter.js",
-      "/ng-modules/core/filters/complex.js",
+      // "/ng-modules/core/filters/ago-filter-builder.js",
+      // "/ng-modules/core/filters/ago-jquery-helpers.js",
+      // "/ng-modules/core/filters/ago-jquery-structured-filter.js",
+      // "/ng-modules/core/filters/ago-jquery-custom-properties-filter.js",
+      // "/ng-modules/core/filters/complex.js",
 
       "/ng-modules/core/systemmenu/systemMenuCtrl.js"),
     "core.min" -> List(
@@ -117,7 +117,7 @@ angular.element(document).ready(function() {
       Project.findByFolder(projectid) match {
         case Some(project: Project) => {
           val groups = request.session.get("user") match {
-            case Some(user:String) => Project.findUserGroups(project, user)
+            case Some(user: String) => Project.findUserGroups(project, user)
             case _ => List()
           }
           module(project.prjtype, mode,
