@@ -113,9 +113,12 @@ angular.element(document).ready(function() {
 
   def project(projectid: String, mode: String, backendMode: String) = Action { request =>
     {
-      (Project.findByFolder(projectid), request.session.get("user")) match {
-        case (Some(project: Project), Some(user: String)) => {
-          val groups = Project.findUserGroups(project, user)
+      Project.findByFolder(projectid) match {
+        case Some(project: Project) => {
+          val groups = request.session.get("user") match {
+            case Some(user:String) => Project.findUserGroups(project, user)
+            case _ => List()
+          }
           module(project.prjtype, mode,
             "window.app = {project:\"" + projectid + "\"}; \n" +
               "angular.module('core').constant('currentProject', '" + projectid + "')\n" +
