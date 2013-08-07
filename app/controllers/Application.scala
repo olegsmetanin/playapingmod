@@ -31,11 +31,11 @@ object Application extends Controller {
       "/ng-modules/core/services/services.js",
       "/ng-modules/core/services/localizedMessages.js",
 
-      // "/ng-modules/core/filters/ago-filter-builder.js",
-      // "/ng-modules/core/filters/ago-jquery-helpers.js",
-      // "/ng-modules/core/filters/ago-jquery-structured-filter.js",
-      // "/ng-modules/core/filters/ago-jquery-custom-properties-filter.js",
-      // "/ng-modules/core/filters/complex.js",
+      "/ng-modules/core/filters/ago-filter-builder.js",
+      "/ng-modules/core/filters/ago-jquery-helpers.js",
+      "/ng-modules/core/filters/ago-jquery-structured-filter.js",
+      "/ng-modules/core/filters/ago-jquery-custom-properties-filter.js",
+      "/ng-modules/core/filters/complex.js",
 
       "/ng-modules/core/systemmenu/systemMenuCtrl.js"),
     "core.min" -> List(

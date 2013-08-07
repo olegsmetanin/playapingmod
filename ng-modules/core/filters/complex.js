@@ -13,31 +13,45 @@ angular.module('core')
                         var path = attrs.path.replace(/'/g, '');
 
                         element.bind('change', function() {
+                            console.log("change");
                             if (!$scope.$$phase) {
-                                $scope.$apply(function() {
-                                    $scope.filterNgModel = {
+
+                                var oldVal = $scope.filterNgModel,
+                                    newVal = {
                                         state: {
                                             path: path
                                         },
                                         val: element.structuredFilter('data')
                                     };
+
+                                //if ((newVal) && (newVal !== oldVal) && (angular.toJson(newVal) !== angular.toJson(oldVal))) {
+                                $scope.$apply(function() {
+                                    $scope.filterNgModel = newVal;
+
+                                });
+                                //}
+                            }
+                        });
+
+                        $scope.$parent.$watch(attrs.filterNgModel, function(newVal, oldVal, scope) {
+                                console.log("watch0", newVal, oldVal);
+                            if ((newVal) && (newVal !== oldVal) && (angular.toJson(newVal) !== angular.toJson(oldVal))) {
+                                console.log("watch", newVal, oldVal);
+
+                                $timeout(function() {
+                                //    element.structuredFilter('data', newVal.val);
                                 });
                             }
                         });
 
-                        $scope.$parent.$watch(attrs.filterNgModel + ".val", function(newVal, oldVal, scope) {
-                            if ((newVal) && (newVal !== oldVal)) {
-                                element.structuredFilter('data', newVal.val);
-                            }
-
-                        });
-
                         $timeout(function() {
-                            element.structuredFilter({
-                                meta: $scope.meta,
-                                path: path,
-                                change: function(e, eventType) {}
-                            });
+                            if (jQuery().structuredFilter) {
+                                element.structuredFilter({
+                                    meta: $scope.meta,
+                                    path: path,
+                                    change: function(e, eventType) {}
+                                });
+                            }
                         });
                     };
                 },
