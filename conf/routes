@@ -3,9 +3,9 @@
 # ~~~~
 
 # Home page
-GET		/										controllers.Application.moduleAction(ngModule = "home", mode = "src", js="angular.module('core').constant('currentProject', null).constant('userGroups', []);", backendMode = "")
+GET		/										controllers.Application.moduleAction(ngModule = "home", js="angular.module('core').constant('currentProject', null).constant('userGroups', []);", backendMode = "")
 GET		/projects								controllers.Application.redirect(url = "/#!/projects/listview")
-GET		/projects/:projectid					controllers.Application.project(projectid, mode = "src", backendMode = "")
+GET		/projects/:projectid					controllers.Application.project(projectid, backendMode = "")
 
 POST	/api/v1									controllers.APIv1.exec
 
@@ -14,11 +14,5 @@ POST	/logout									controllers.APIv1.logout
 POST	/user-groups							controllers.APIv1.userGroups
 POST	/current-user							controllers.APIv1.currentUser
 
-# Get minified resources /modules/core.min.js
-GET		/ng-modules/$file<.*\.min\.js$>			controllers.Assets.at(path="/public/ng-modules", file)
-# Get sources /modules/core/_module.js
-GET		/ng-modules/*file						controllers.ExternalAssets.at(path="ng-modules", file)
-
-GET		/components/*file						controllers.Assets.at(path="/public/components", file)
-
-GET		/css/*file								controllers.Assets.at(path="/public/css", file)
+#DevAssets in dev mode get from ng-app, in prod mode get from public/ng-app
+GET		/ng-app/*file							controllers.DevAssets.at(path="ng-app", file, prodpath="/public/ng-app")

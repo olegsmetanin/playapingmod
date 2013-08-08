@@ -27,7 +27,7 @@ object ApplicationBuild extends Build {
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     commands ++= Seq(ngInit),
-    playAssetsDirectories <+= baseDirectory / "ng-modules",
+    playAssetsDirectories <+= baseDirectory / "ng-app",
     //(compile in Compile) <<= (compile in Compile) dependsOn (gruntTask("install"))
 
     ngBuild <<= (compile in ngBuild) map { _ =>

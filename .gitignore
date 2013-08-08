@@ -14,7 +14,11 @@ node_modules
 ._.DS_Store
 ._*
 
-ng-modules/build
-ng-modules/dist
-public/components
-public/ng-modules
+ng-app/modules/build
+ng-app/modules/dist
+ng-app/components
+public/ng-app
+
+play.h2.db
+play.lock.db
+play.trace.db

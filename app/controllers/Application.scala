@@ -15,58 +15,80 @@ import views._
 object Application extends Controller {
 
   val modulesSrc = Map(
-    "core.src" -> List(
-      "/ng-modules/core/_module.js",
-      "/ng-modules/core/breadcrumbs/breadcrumbsCtrl.js",
-      "/ng-modules/core/tabbar/tabbar.js",
-      "/ng-modules/core/security/backendless.js",
-      "/ng-modules/core/security/index.js",
-      "/ng-modules/core/security/authorization.js",
-      "/ng-modules/core/security/interceptor.js",
-      "/ng-modules/core/security/retryQueue.js",
-      "/ng-modules/core/security/security.js",
-      "/ng-modules/core/security/login/login.js",
-      "/ng-modules/core/security/login/LoginFormController.js",
-      "/ng-modules/core/security/login/toolbar.js",
-      "/ng-modules/core/services/services.js",
-      "/ng-modules/core/services/localizedMessages.js",
+    "core.dev" -> List(
 
-      "/ng-modules/core/filters/ago-filter-builder.js",
-      "/ng-modules/core/filters/ago-jquery-helpers.js",
-      "/ng-modules/core/filters/ago-jquery-structured-filter.js",
-      "/ng-modules/core/filters/ago-jquery-custom-properties-filter.js",
-      "/ng-modules/core/filters/complex.js",
+      "/ng-app/components/bootstrap-2.3.2/css/bootstrap.min.css",
+      "/ng-app/components/bootstrap-2.3.2/css/bootstrap-responsive.min.css",
+      "/ng-app/components/select2-3.4.1/select2.css",
+      "/ng-app/components/jquery-ui-1.10.3/themes/smoothness/jquery-ui.css",
+      "/ng-app/assets/ago-filter-builder.css",
 
-      "/ng-modules/core/systemmenu/systemMenuCtrl.js"),
-    "core.min" -> List(
-      "/ng-modules/core.min.js"),
-    "home.src" -> List(
-      "/ng-modules/home/_module.js",
-      "/ng-modules/home/projects/projects.js"),
-    "home.min" -> List(
-      "/ng-modules/home.min.js"),
-    "crm.src" -> List(
-      "/ng-modules/crm/_module.js",
-      "/ng-modules/crm/contracts/list/contractListFilterCtrl.js"),
-    "crm.min" -> List(
-      "/ng-modules/crm.min.js"))
+      "/ng-app/components/jquery-1.9.1/jquery.min.js",
+      "/ng-app/components/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js",
+      "/ng-app/components/bootstrap-2.3.2/js/bootstrap.min.js",
+      "/ng-app/components/select2-3.4.1/select2.min.js",
+      "/ng-app/components/angular-1.0.7/angular.js",
+      "/ng-app/components/angular-mocks/angular-mocks.js",
+      "/ng-app/components/angular-ui-router-0.0.1/release/angular-ui-router.js",
+      "/ng-app/components/angular-ui-date-0.0.3/src/date.js",
+      "/ng-app/components/angular-ui-select2-0.0.2/src/select2.js",
+      "/ng-app/components/angular-ui-bootstrap-0.5.0/ui-bootstrap-0.5.0.min.js",
+      "/ng-app/components/angular-ui-bootstrap-0.5.0/ui-bootstrap-tpls-0.5.0.min.js",
 
-  def moduleAction(ngModule: String, mode: String, js: String, backendMode: String = "") = Action {
-    module(ngModule, mode, js, backendMode);
+      "/ng-app/modules/core/_module.js",
+      "/ng-app/modules/core/breadcrumbs/breadcrumbsCtrl.js",
+      "/ng-app/modules/core/tabbar/tabbar.js",
+      "/ng-app/modules/core/security/backendless.js",
+      "/ng-app/modules/core/security/index.js",
+      "/ng-app/modules/core/security/authorization.js",
+      "/ng-app/modules/core/security/interceptor.js",
+      "/ng-app/modules/core/security/retryQueue.js",
+      "/ng-app/modules/core/security/security.js",
+      "/ng-app/modules/core/security/login/login.js",
+      "/ng-app/modules/core/security/login/LoginFormController.js",
+      "/ng-app/modules/core/security/login/toolbar.js",
+      "/ng-app/modules/core/services/services.js",
+      "/ng-app/modules/core/services/localizedMessages.js",
+
+      "/ng-app/modules/core/filters/ago-filter-builder.js",
+      "/ng-app/modules/core/filters/ago-jquery-helpers.js",
+      "/ng-app/modules/core/filters/ago-jquery-structured-filter.js",
+      "/ng-app/modules/core/filters/ago-jquery-custom-properties-filter.js",
+      "/ng-app/modules/core/filters/complex.js",
+
+      "/ng-app/modules/core/systemmenu/systemMenuCtrl.js"),
+    "core.prod" -> List(
+      "/ng-app/css/styles.min.css",
+      "/ng-app/js.min.js",
+      "/ng-app/core.min.js"),
+    "home.dev" -> List(
+      "/ng-app/modules/home/_module.js",
+      "/ng-app/modules/home/projects/projects.js"),
+    "home.prod" -> List(
+      "/ng-app/home.min.js"),
+    "crm.dev" -> List(
+      "/ng-app/modules/crm/_module.js",
+      "/ng-app/modules/crm/contracts/list/contractListFilterCtrl.js"),
+    "crm.prod" -> List(
+      "/ng-app/crm.min.js"))
+
+  def moduleAction(ngModule: String, js: String, backendMode: String = "") = Action {
+    module(ngModule, js, backendMode);
   }
 
-  def module(ngModule: String, mode: String, js: String = "", backendMode: String = "") = {
+  def module(ngModule: String, js: String = "", backendMode: String = "") = {
 
     val efmode = Play.mode match {
-      case Mode.Prod => "min"
-      case _ => mode
+      case Mode.Prod => "prod"
+      case Mode.Dev => Play.configuration.getString("devmode", Some(Set("dev", "prod"))).getOrElse("prod")
+      case _ => "prod"
     }
 
     modulesSrc.get(ngModule + "." + efmode) match {
       case Some(res) => {
 
         val tpl = efmode match {
-          case "src" => "angular.module('core.templates', [] ); angular.module('" + ngModule + ".templates', [] );"
+          case "dev" => "angular.module('core.templates', [] ); angular.module('" + ngModule + ".templates', [] );"
           case _ => ""
         }
 
@@ -75,44 +97,27 @@ object Application extends Controller {
           case _ => "core" :: ngModule :: Nil
         }
 
-        val vars = "var js = " + Json.stringify(Json.toJson((modulesSrc.get("core." + efmode)).get ::: res)) + "," +
-          "mod = " + Json.stringify(Json.toJson(mod)) + ";"
-
-        val bodyScript = """
-<script>
-
-(function() {
-""" + vars + """
-
-
-
-function addScripts(js) {
-	/*jshint evil:true */
-	for (var i = 0; i < js.length; i++) {
-	    document.writeln('<script type="text/javascript" src="' + js[i] + '"></'+'script>');
-	}
-}
-
-addScripts(js);
-
-""" + tpl + """
+        val yepnope = """
+var resourceList =
+""" + Json.stringify(Json.toJson((modulesSrc.get("core." + efmode)).get ::: res)) + """;
+var mod =
+""" + Json.stringify(Json.toJson(mod)) + """;
+var completeCb = function () {
 angular.element(document).ready(function() {
-    """ + js + """
+    """ + tpl + js + """
     angular.bootstrap(document, mod);
 });
 
-})();
-
-</script>
+};
 """;
-        Ok(html.main(title = "qwe", bodyScripts = Html(bodyScript)));
+        Ok(html.main(title = "qwe", yepnopeScripts = Html(yepnope)));
       }
       case _ => NotFound
     }
 
   }
 
-  def project(projectid: String, mode: String, backendMode: String) = Action { request =>
+  def project(projectid: String, backendMode: String) = Action { request =>
     {
       Project.findByFolder(projectid) match {
         case Some(project: Project) => {
@@ -120,7 +125,7 @@ angular.element(document).ready(function() {
             case Some(user: String) => Project.findUserGroups(project, user)
             case _ => List()
           }
-          module(project.prjtype, mode,
+          module(project.prjtype,
             "window.app = {project:\"" + projectid + "\"}; \n" +
               "angular.module('core').constant('currentProject', '" + projectid + "')\n" +
               ".constant('userGroups', " + Json.stringify(Json.toJson(groups)) + ")",
