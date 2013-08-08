@@ -85,7 +85,7 @@
                         url: '/projects'
                     },{
                         name: window.app.project,
-                        url: '/projects/'+window.app.project
+                        url: '#!/contracts'
                     },{
                         name: 'Contracts',
                         url: '#!/contracts'
@@ -120,7 +120,7 @@
                         url: '/projects'
                     },{
                         name: window.app.project,
-                        url: '/projects/'+window.app.project
+                        url: '#!/contracts'
                     },{
                         name: 'contracts',
                         url: '#!/contracts'
