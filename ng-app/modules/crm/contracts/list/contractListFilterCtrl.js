@@ -2,7 +2,7 @@ angular.module('crm')
 
 .controller('contractFilterCtrl', ['$scope', '$stateParams',
     function($scope, $stateParams) {
-        $scope.state = '{"simple":{"category":{"val":[{"id":1,"text":"cat"},{"id":4,"text":"rat"},{"id":6,"text":"zet"}]},"status":{"val":[{"id":4,"text":"rat"}]},"AuthorFirstName":{"val":[]},"number":{"val":"123","state":{"path":"Contract.Number"}},"startDate":{"val":"312","state":{"path":"Contract.StatusHistory.StartDate"}}}} ';
+        $scope.state = '{"simple":{"category":{"val":[{"id":1,"text":"cat"},{"id":4,"text":"rat"},{"id":6,"text":"zet"}]},"status":{"val":[{"id":4,"text":"rat"}]},"AuthorFirstName":{"val":[]},"number":{"val":"123","state":{"path":"Contract.Number"}},"startDate":{"val":"312","state":{"path":"Contract.StatusHistory.StartDate"}}}}';
 
         $scope.filter = {};
 
@@ -10,7 +10,8 @@ angular.module('crm')
             $scope.filter = angular.fromJson($scope.state);
         };
 
-        //$scope.filter.complex="asd";
+
+
 
         $scope.meta = {
             "AGO.Docstore.Model.Documents.DocumentCustomPropertyModel": {
@@ -681,7 +682,10 @@ angular.module('crm')
                     }
                 }
             }
+
         };
+
+
 
     }
 ])

@@ -34,7 +34,7 @@
         </tab>
 
         <tab heading="Complex">
-            <div filter-complex filter-ng-model="filter.complex" path="'AGO.Docstore.Model.Documents.DocumentModel'"></div>
+            <div filter-complex filter-ng-model="filter.complex" meta="meta" path="'AGO.Docstore.Model.Documents.DocumentModel'"></div>
         </tab>
 
         <tab heading="Spatial">
@@ -51,6 +51,7 @@
 
     </tabset>
 
-    Current filter: {{filter}}
+    Current filter: {{filter}}<br/>
+    Meta: {{meta}}
 
 </div>
