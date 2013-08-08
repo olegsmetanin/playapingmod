@@ -73,6 +73,23 @@
                 });
                 return deferred.promise;
             };
+            this.getContractTasks = function(filter, contract) {
+                var deferred = $q.defer();
+                 $http.post("/api/v1", {
+                    action: "get",
+                    model: "project.contracts.tasks",
+                    project: window.app.project,
+                    contract: parseInt(contract),
+                    filter: filter
+                }).success(function (data, status, headers, config) {
+                     deferred.resolve(data);
+                }).error(function (data, status, headers, config) {
+                    // TODO
+                });
+                return deferred.promise;
+            };
+
+
         }
     ])
 
@@ -134,7 +151,35 @@
             $scope.contractid = contractid;
         }
     ])
+    .controller('contractTasksTabCtrl', ['$scope', '$stateParams', 'pageConfig', 'contractService',
+        function($scope, $stateParams, $pageConfig, $contractService) {
+            var contractid = $stateParams.contractid;
 
+            $pageConfig.setConfig({
+                breadcrumbs: [{
+                        name: "Projects",
+                        url: '/projects'
+                    },{
+                        name: window.app.project,
+                        url: '#!/contracts'
+                    },{
+                        name: 'contracts',
+                        url: '#!/contracts'
+                    }, {
+                        name: contractid,
+                        url: '#!/contracts/' + contractid + '/common'
+                    }
+
+                ]
+            });
+            $scope.contractid = contractid;
+
+            $contractService.getContractTasks({}, contractid).then(function (res) {
+                $scope.tasks =  res.tasks;
+            });
+
+        }
+    ])
 // Edit
 .controller('contractItemCtrl', ['$scope', '$q', '$timeout',
     function($scope, $q, $timeout) {

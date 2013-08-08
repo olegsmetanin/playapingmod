@@ -65,11 +65,11 @@ object APIv1 extends Controller {
   }
 
   def currentUser = Action { request =>
-    request.session.get("user").map { sessKey => 
+    request.session.get("user").map { sessKey =>
           User.findByEmail(sessKey) match {
-            case Some(u:User) => 
+            case Some(u:User) =>
               Ok(Json.obj("user" -> Json.toJson(User.userInfo(u))))
-            case _ => 
+            case _ =>
               InternalServerError(Json.obj("error" -> JsString("User not found")))
           }
    }.getOrElse {
@@ -99,6 +99,7 @@ def index = Action { request =>
       case (JsSuccess("get", _), JsSuccess("projects", _), None ) => Unauthorized("Unexpected Json data")
       case (JsSuccess("get", _), JsSuccess("projects", _), Some(user: String)) => getProjects(json)
       case (JsSuccess("get", _), JsSuccess("project.contracts", _), _ ) => getContracts(json)
+      case (JsSuccess("get", _), JsSuccess("project.contracts.tasks", _), _ ) => getContractTasks(json)
       case _ => BadRequest("Unexpected Json data")
     }
   }
@@ -130,6 +131,26 @@ def index = Action { request =>
     }
 
   }
+
+  def getContractTasks(json: JsValue) = {
+    val project = (json \ "project").validate[String];
+     val contract = (json \ "contract").validate[Long];
+    (project, contract) match {
+      case (JsSuccess(project, _), JsSuccess(contract, _) ) => {
+        val tasks = Task.findByContract(contract).map { task =>
+          JsObject(
+            "id" -> JsString(task.id.get.toString) ::
+              "title" -> JsString(task.title) :: Nil)
+        }
+
+        Ok(Json.obj("tasks" -> JsArray(tasks)))
+      }
+      case _ => BadRequest("Not found project name or contract number")
+
+    }
+
+  }
+
 
 }
 

@@ -50,6 +50,20 @@ object Task {
     }
   }
 
+  def findByContract(contract:Long): Seq[Task] = {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+          select * from task
+          join contract_task on contract_task.task_id = task.id
+          where contract_task.contract_id = {contract}
+        """
+        ).on(
+          'contract -> contract
+        ).as(Task.simple *)
+    }
+  }
+
   /**
    * Retrieve todo tasks for the user.
    */
