@@ -2,7 +2,6 @@ angular.module('core')
     .directive('filterComplex', ['$timeout', '$parse',
         function($timeout, $parse) {
             return {
-                /* This one is important: */
                 scope: {
                     filterNgModel: "=",
                     meta: "="
@@ -12,7 +11,7 @@ angular.module('core')
                     return function($scope, element, attrs, filterNgModelCtrl) {
                         var path = attrs.path.replace(/'/g, '');
 
-                        element.bind('change', function() {
+                        element.bind('filterChange', function() {
                             console.log("change");
                             if (!$scope.$$phase) {
 
@@ -24,23 +23,20 @@ angular.module('core')
                                         val: element.structuredFilter('data')
                                     };
 
-                                //if ((newVal) && (newVal !== oldVal) && (angular.toJson(newVal) !== angular.toJson(oldVal))) {
                                 $scope.$apply(function() {
                                     $scope.filterNgModel = newVal;
 
                                 });
-                                //}
                             }
                         });
 
                         $scope.$parent.$watch(attrs.filterNgModel, function(newVal, oldVal, scope) {
-                                console.log("watch0", newVal, oldVal);
-                            if ((newVal) && (newVal !== oldVal) && (angular.toJson(newVal) !== angular.toJson(oldVal))) {
-                                console.log("watch", newVal, oldVal);
+                            if ((newVal) && (newVal !== oldVal)) {
 
                                 $timeout(function() {
-                                //    element.structuredFilter('data', newVal.val);
+                                    element.structuredFilter('data', newVal.val);
                                 });
+
                             }
                         });
 

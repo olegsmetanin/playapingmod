@@ -101,11 +101,11 @@
 			}
 
 			me.filterBuilder.callbacks.push(function (eventType) {
-				me.container.trigger('change', [eventType]);
+				me.container.trigger('filterChange', [eventType]);
 			});
 
-			if ($.isFunction(me.settings.change)) {
-				me.container.on('change', me.settings.change);
+			if ($.isFunction(me.settings.filterChange)) {
+				me.container.on('filterChange', me.settings.filterChange);
 			}
 		},
 
@@ -263,7 +263,7 @@
 				buttons.append(commitButton);
 				commitButton.on('click', function () {
 					me.changedEvent.apply(buttons);
-					me.filterBuilder.endEdit();
+					me.filterBuilder.endEdit(true);
 					return false;
 				});
 
@@ -326,7 +326,7 @@
 
 		//region Helper methods
 
-		changedEvent: function () {
+		changedEvent: function (suppressEvents) {
 			var nodeData, nodePanel, me, node, clonedNode, select,
 				valueEditor, date, timePicker, time;
 
@@ -337,55 +337,68 @@
 			}
 			me = nodePanel.parents('.filterBuilder').data('plugin_' +
 				pluginName);
-			node = nodePanel.data('node');
-			clonedNode = me.filterBuilder.cloneNodeData(node);
 
-			select = $('.pathSelect', nodeData);
-			if (select.length) {
-				clonedNode.path = select.val();
-				if (clonedNode.path === '||' || clonedNode.path === '&&' ||
-					clonedNode.path ===
-					'&&!') {
-					clonedNode.op = clonedNode.path;
-					clonedNode.path = '';
-				}
+			if (suppressEvents) {
+				me.filterBuilder.suppressEvents = true;
 			}
 
-			if (me.filterBuilder.isSpecialNode(node) && node.path !==
-				clonedNode.path) {
-				clonedNode.op = '';
-			}
+			try {
+				node = nodePanel.data('node');
+				clonedNode = me.filterBuilder.cloneNodeData(node);
 
-			if (!me.filterBuilder.isSpecialNode(clonedNode)) {
-				select = $('.opSelect', nodeData);
+				select = $('.pathSelect', nodeData);
 				if (select.length) {
-					clonedNode.op = select.val();
+					clonedNode.path = select.val();
+					if (clonedNode.path === '||' || clonedNode.path === '&&' ||
+						clonedNode.path ===
+						'&&!') {
+						clonedNode.op = clonedNode.path;
+						clonedNode.path = '';
+					}
 				}
 
-				valueEditor = $('.valueEditor', nodeData);
+				if (me.filterBuilder.isSpecialNode(node) && node.path !==
+					clonedNode.path) {
+					clonedNode.op = '';
+				}
 
-				if (valueEditor.length) {
-					clonedNode.value = valueEditor.val();
+				if (!me.filterBuilder.isSpecialNode(clonedNode)) {
+					select = $('.opSelect', nodeData);
+					if (select.length) {
+						clonedNode.op = select.val();
+					}
 
-					if (valueEditor.hasClass('datePicker')) {
-						date = valueEditor.datepicker('getDate');
-						if (date && !isNaN(date.valueOf())) {
-							timePicker = $('.timePicker', nodeData);
-							if (timePicker.length) {
-								time = timePicker.timepicker('getTime');
-								if (time && !isNaN(time.valueOf())) {
-									date.setHours(time.getHours());
-									date.setMinutes(time.getMinutes());
-									date.setSeconds(time.getSeconds());
+					valueEditor = $('.valueEditor', nodeData);
+
+					if (valueEditor.length) {
+						clonedNode.value = valueEditor.val();
+
+						if (valueEditor.hasClass('datePicker')) {
+							date = valueEditor.datepicker('getDate');
+							if (date && !isNaN(date.valueOf())) {
+								timePicker = $('.timePicker', nodeData);
+								if (timePicker.length) {
+									time = timePicker.timepicker('getTime');
+									if (time && !isNaN(time.valueOf())) {
+										date.setHours(time.getHours());
+										date.setMinutes(time.getMinutes());
+										date.setSeconds(time.getSeconds());
+									}
 								}
+								clonedNode.value = $.isoDateTimeString(date);
 							}
-							clonedNode.value = $.isoDateTimeString(date);
 						}
 					}
 				}
-			}
 
-			me.filterBuilder.changeNode(node, clonedNode);
+				me.filterBuilder.changeNode(node, clonedNode);
+			}
+			finally
+			{
+				if (suppressEvents) {
+					me.filterBuilder.suppressEvents = false;
+				}
+			}
 		},
 
 		createPathSelect: function (node, nodeData) {
@@ -394,8 +407,12 @@
 			pathSelect = $('<select />').addClass('pathSelect');
 			nodeData.append(pathSelect);
 
-			pathSelect.on('keypress', me.changedEvent);
-			pathSelect.on('change', me.changedEvent);
+			pathSelect.on('keypress', function () {
+				me.changedEvent.apply(this, [true]);
+			});
+			pathSelect.on('change', function () {
+				me.changedEvent.apply(this, [true]);
+			});
 
 			pathSelect.append($.createSelectOption('&&', me.filterBuilder.opDisplayName(
 				'&&'), node.op));
@@ -435,8 +452,12 @@
 			opSelect = $('<select />').addClass('opSelect');
 			nodeData.append(opSelect);
 
-			opSelect.on('keypress', me.changedEvent);
-			opSelect.on('change', me.changedEvent);
+			opSelect.on('keypress', function () {
+				me.changedEvent.apply(this, [true]);
+			});
+			opSelect.on('change', function () {
+				me.changedEvent.apply(this, [true]);
+			});
 
 			me.addOpToSelectIfApplicable(opSelect, node, '=');
 			me.addOpToSelectIfApplicable(opSelect, node, '!=');

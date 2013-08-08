@@ -834,7 +834,8 @@
 			allModelsMetadata: allModelsMetadata ? allModelsMetadata : {},
 			uiAdapter: uiAdapter,
 			callbacks: [],
-
+			suppressEvents: false,
+			
 			isRoot: true,
 			nodeId: 'RootNodeId',
 			path: '',
@@ -853,6 +854,9 @@
 
 		$.extend(this, {
 			selectNode: function (node) {
+				if (this.editingNode) {
+					return;
+				}
 				if (this.selectedNode) {
 					this.uiAdapter.nodeDeselected(this.selectedNode);
 				}
@@ -876,6 +880,7 @@
 
 				node = {
 					nodeId: $.trim(Math.random()).substring(2),
+					isTemp: true,
 					path: '',
 					op: '&&',
 					items: {},
@@ -890,7 +895,6 @@
 					this.uiAdapter.nodeUpdated(parent);
 				}
 				this.uiAdapter.nodeAdded(node);
-				this.notifyObservers('nodeAdded', node);
 
 				if (!beginEdit) {
 					return node;
@@ -911,16 +915,16 @@
 
 				this.uiAdapter.nodeRemoved(this.selectedNode);
 				this.removeNodeFromParent(this.selectedNode);
-				this.notifyObservers('nodeDeleted', this.selectedNode);
-
+				if (!this.selectedNode.isTemp) {
+					this.notifyObservers('nodeDeleted', this.selectedNode);
+				}
 				if (parent && !parent.isRoot && !this.isSpecialNode(
 					parent) && !this.hasSubNodes(parent)) {
 					parent.op = 'exists';
 					this.uiAdapter.nodeUpdated(parent);
 				}
 
-				this.selectNode(this.hasSubNodes(this) ? null :
-					this);
+				this.selectNode(this.hasSubNodes(this) ? null :	this);
 			},
 
 			beginEdit: function () {
@@ -934,8 +938,8 @@
 				this.uiAdapter.nodeUpdated(this.editingNode);
 			},
 
-			endEdit: function () {
-				var parent, node;
+			endEdit: function (commit) {
+				var parent, node, remove;
 
 				if (!this.editingNode) {
 					return;
@@ -943,9 +947,9 @@
 				node = this.editingNode;
 				this.editingNode = null;
 
-				if ((!node.path || !node.path.length) && (!
-					node.op || !
-					node.op.length)) {
+				remove = (node.isTemp && !commit) ||
+					(!node.path && !node.op);
+				if (remove) {
 					parent = node.parent;
 					this.deleteNode();
 					if (parent) {
@@ -953,10 +957,12 @@
 					}
 					return;
 				}
+				if (node.isTemp) {
+					delete node.isTemp;
+				}
 
 				this.updateActionsState();
 				this.uiAdapter.nodeUpdated(node);
-				this.notifyObservers('nodeUpdated', node);
 			},
 
 			changeNode: function (node, newNode) {
@@ -1036,19 +1042,24 @@
 			},
 
 			load: function (nodes) {
-				if (!$.isArray(nodes)) {
-					return false;
+				this.suppressEvents = true;
+				
+				try {
+					if (!$.isArray(nodes)) {
+						return false;
+					}
+
+					this.clear();
+
+					for (var i = 0; i < nodes.length; i += 1) {
+						this.doLoadServerNode(nodes[i], this);
+					}
+
+					return true;
 				}
-
-				this.clear();
-
-				for (var i = 0; i < nodes.length; i += 1) {
-					this.doLoadServerNode(nodes[i], this);
-				}
-
-				this.notifyObservers('nodesLoaded');
-
-				return true;
+				finally {
+					this.suppressEvents = false;
+				}		
 			},
 
 			validate: function () {
@@ -1060,23 +1071,6 @@
 				}
 
 				return this.isNodeValid(this);
-			},
-
-			init: function (initialNodes) {
-				this.initializing = true;
-
-				try {
-					this.uiAdapter.initUI(this);
-
-					this.clear();
-
-					if ($.isArray(initialNodes)) {
-						this.load(initialNodes);
-					}
-				}
-				finally {
-					this.initializing = false;
-				}
 			}
 		});
 
@@ -1620,7 +1614,7 @@
 			notifyObservers: function (eventType, arg) {
 				var fn, i, args;
 
-				if (this.initializing) {
+				if (this.suppressEvents) {
 					return;
 				}
 

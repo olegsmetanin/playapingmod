@@ -84,11 +84,11 @@
 			}
 
 			me.filterBuilder.callbacks.push(function (eventType) {
-				me.container.trigger('change', [eventType]);
+				me.container.trigger('filterChange', [eventType]);
 			});
 
-			if ($.isFunction(me.settings.change)) {
-				me.container.on('change', me.settings.change);
+			if ($.isFunction(me.settings.filterChange)) {
+				me.container.on('filterChange', me.settings.filterChange);
 			}
 		},
 
@@ -241,7 +241,7 @@
 					buttons.append(commitButton);
 					commitButton.on('click', function () {
 						me.propertyValueChangedEvent.apply(buttons);
-						me.filterBuilder.endEdit();
+						me.filterBuilder.endEdit(true);
 						return false;
 					});
 
